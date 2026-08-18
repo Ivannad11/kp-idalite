@@ -2,11 +2,11 @@
 <html lang="ru">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex">
 <title>3D-карта квартала — демо</title>
 <link rel="stylesheet" href="../fonts/fonts.css">
-<style>html,body{height:100%;margin:0;padding:0;overflow:hidden}</style>
+<style>html,body{height:100%;margin:0;padding:0;overflow:hidden;touch-action:none;overscroll-behavior:none}</style>
 </head>
 <body>
 <style>
@@ -58,8 +58,10 @@
   background:var(--ink); color:var(--fg);
   font-family:'Golos Text',system-ui,sans-serif;
   overflow:hidden; user-select:none; -webkit-user-select:none;
+  touch-action:none; -webkit-touch-callout:none;
 }
-#gl{position:absolute; inset:0; width:100%; height:100%; display:block; cursor:grab; touch-action:none}
+#gl{position:absolute; inset:0; width:100%; height:100%; display:block; cursor:grab;
+  touch-action:none; -webkit-tap-highlight-color:transparent}
 #gl.dragging{cursor:grabbing}
 #gl.pointing{cursor:pointer}
 
@@ -887,7 +889,9 @@ function camPos(){
 let dragging=false, lastX=0, lastY=0, pointers=new Map(), pinchStart=0, distStart=0, moved=0;
 
 canvas.addEventListener('pointerdown', e=>{
-  canvas.setPointerCapture(e.pointerId);
+  // register the pointer BEFORE capturing it: setPointerCapture throws on some
+  // touch browsers, and an exception here used to abort the whole handler —
+  // which is why phones could only press the buttons and never drag the scene
   pointers.set(e.pointerId, {x:e.clientX, y:e.clientY});
   if(pointers.size===1){ dragging=true; lastX=e.clientX; lastY=e.clientY; moved=0; canvas.classList.add('dragging'); orbiting=false; syncOrbitBtn(); touched(); }
   else if(pointers.size===2){
@@ -895,8 +899,11 @@ canvas.addEventListener('pointerdown', e=>{
     pinchStart=Math.hypot(p[0].x-p[1].x, p[0].y-p[1].y);
     distStart=cam.distT;
   }
-});
+  if(e.cancelable) e.preventDefault();
+  try{ canvas.setPointerCapture(e.pointerId); }catch(err){}
+}, {passive:false});
 canvas.addEventListener('pointermove', e=>{
+  if(dragging && e.cancelable) e.preventDefault();
   if(pointers.has(e.pointerId)) pointers.set(e.pointerId, {x:e.clientX, y:e.clientY});
   if(pointers.size===2){
     const p=[...pointers.values()];
@@ -910,22 +917,67 @@ canvas.addEventListener('pointermove', e=>{
     cam.azT += dx*0.0052;
     cam.elT = clamp(cam.elT + dy*0.0042, 0.10, 1.32);
     lastX=e.clientX; lastY=e.clientY;
-  } else {
+  } else if(e.pointerType === 'mouse'){
     const hit = pick(e);
     hoverId = hit ? hit.id : 0;
     canvas.classList.toggle('pointing', !!hit);
   }
-});
+}, {passive:false});
 function endPointer(e){
   pointers.delete(e.pointerId);
   if(pointers.size<2) pinchStart=0;
   if(pointers.size===0){
-    if(dragging && moved < 6) handleClick(e);
+    // a finger is shakier than a mouse — allow more slop before it stops being a tap
+    const slop = e.pointerType === 'mouse' ? 6 : 14;
+    if(dragging && moved < slop) handleClick(e);
     dragging=false; canvas.classList.remove('dragging');
   }
 }
 canvas.addEventListener('pointerup', endPointer);
 canvas.addEventListener('pointercancel', endPointer);
+canvas.addEventListener('lostpointercapture', endPointer);
+
+/* ---- touch fallback: only arms itself if pointer events never reached us ---- */
+let sawPointer = false;
+canvas.addEventListener('pointerdown', ()=>{ sawPointer = true; }, {passive:true});
+
+let tLastX=0, tLastY=0, tMoved=0, tPinch=0, tDistStart=0;
+canvas.addEventListener('touchstart', e=>{
+  if(sawPointer) return;
+  touched(); orbiting=false; syncOrbitBtn();
+  if(e.touches.length===1){
+    dragging=true; tMoved=0;
+    tLastX=e.touches[0].clientX; tLastY=e.touches[0].clientY;
+  } else if(e.touches.length===2){
+    tPinch=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,
+                      e.touches[0].clientY-e.touches[1].clientY);
+    tDistStart=cam.distT;
+  }
+  if(e.cancelable) e.preventDefault();
+}, {passive:false});
+canvas.addEventListener('touchmove', e=>{
+  if(sawPointer) return;
+  if(e.touches.length===2){
+    const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,
+                       e.touches[0].clientY-e.touches[1].clientY);
+    if(tPinch>0) cam.distT = clamp(tDistStart*(tPinch/Math.max(d,1)), 46, 300);
+  } else if(dragging && e.touches.length===1){
+    const x=e.touches[0].clientX, y=e.touches[0].clientY;
+    const dx=x-tLastX, dy=y-tLastY;
+    tMoved += Math.abs(dx)+Math.abs(dy);
+    cam.azT += dx*0.0052;
+    cam.elT = clamp(cam.elT + dy*0.0042, 0.10, 1.32);
+    tLastX=x; tLastY=y;
+  }
+  if(e.cancelable) e.preventDefault();
+}, {passive:false});
+canvas.addEventListener('touchend', e=>{
+  if(sawPointer) return;
+  if(dragging && tMoved < 14 && e.changedTouches.length){
+    handleClick({clientX:e.changedTouches[0].clientX, clientY:e.changedTouches[0].clientY});
+  }
+  if(!e.touches.length){ dragging=false; tPinch=0; }
+}, {passive:false});
 canvas.addEventListener('wheel', e=>{
   e.preventDefault();
   // scale by the actual delta, not just its sign: a trackpad sends many small
