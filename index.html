@@ -415,6 +415,31 @@ html.js .rv.in{opacity:1;transform:none}
   </div>
 </section>
 
+<!-- ===================== ЖИВОЕ ДЕМО ===================== -->
+<style>
+.demoframe{position:relative;border:1px solid var(--line);overflow:hidden;background:var(--stripe)}
+.demoframe iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block}
+.demofoot{display:flex;flex-wrap:wrap;gap:8px 26px;margin-top:14px}
+.demofoot span{color:var(--fgd)}
+@media(max-width:720px){.demoframe{aspect-ratio:4/5}}
+</style>
+<section id="demo">
+  <div class="wrap">
+    <div class="shead"><span class="mono">Живое демо</span><h2>Это не видео, а работающая карта</h2></div>
+    <p class="lead rv" style="margin-bottom:36px">Ниже — трёхмерная сцена, которую ваше устройство рисует прямо сейчас.
+      Вращайте, приближайте, нажмите на корпус: откроется карточка с этажами, ценой и остатком квартир.
+      Данные в демо условные, механика — та самая.</p>
+    <div class="demoframe r169 rv">
+      <iframe src="demo/map.html" title="Интерактивная 3D-карта квартала" loading="lazy" allowfullscreen></iframe>
+    </div>
+    <div class="demofoot mono">
+      <span>Страница весит 45 КБ</span>
+      <span>Вся сцена — 5 вызовов отрисовки</span>
+      <span>Сервер в отрисовке не участвует</span>
+    </div>
+  </div>
+</section>
+
 <!-- ===================== КЛЮЧЕВОЙ АРГУМЕНТ ===================== -->
 <section>
   <div class="wrap">
@@ -493,6 +518,24 @@ html.js .rv.in{opacity:1;transform:none}
         <figure><img src="media/gallery/enc-07.jpg" alt="Рендер Encore Resort" loading="lazy"></figure>
         <figure><img src="media/gallery/enc-08.jpg" alt="Рендер Encore Resort" loading="lazy"></figure>
         <figure><img src="media/gallery/enc-09.jpg" alt="Рендер Encore Resort" loading="lazy"></figure>
+  </div>
+  <div class="wrap">
+    <div class="galhint"><span class="mono">Листайте вбок · нажмите, чтобы увеличить</span><span class="line"></span></div>
+  </div>
+  <div class="wrap">
+    <div class="shead" style="margin-top:64px"><span class="mono">Территория</span><h2>Двор, который продаёт</h2></div>
+    <p class="lead rv" style="margin-bottom:36px">ЖК «Оригана» — проект, для которого мы делали интерактивный
+      макет с собственным ПО. На карте покупатель видит именно это: площадки, арт-объекты, вечернюю подсветку,
+      а не серую схему с подписями.</p>
+  </div>
+  <div class="gal rv">
+        <figure><img src="media/gallery2/org-01.jpg" alt="Территория жилого комплекса" loading="lazy"></figure>
+        <figure><img src="media/gallery2/org-02.jpg" alt="Территория жилого комплекса" loading="lazy"></figure>
+        <figure><img src="media/gallery2/org-03.jpg" alt="Территория жилого комплекса" loading="lazy"></figure>
+        <figure><img src="media/gallery2/org-04.jpg" alt="Территория жилого комплекса" loading="lazy"></figure>
+        <figure><img src="media/gallery2/org-05.jpg" alt="Территория жилого комплекса" loading="lazy"></figure>
+        <figure><img src="media/gallery2/org-06.jpg" alt="Территория жилого комплекса" loading="lazy"></figure>
+        <figure><img src="media/gallery2/org-07.jpg" alt="Территория жилого комплекса" loading="lazy"></figure>
   </div>
   <div class="wrap">
     <div class="galhint"><span class="mono">Листайте вбок · нажмите, чтобы увеличить</span><span class="line"></span></div>
