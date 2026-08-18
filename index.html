@@ -861,6 +861,44 @@ html.js .rv.in{opacity:1;transform:none}
 // класс ставим из скрипта: если JS отключён, .rv остаётся видимым
 document.documentElement.classList.add('js');
 
+// Цели: что человек реально сделал в предложении
+(function(){
+  if (typeof ym !== 'function') return;
+  var ID = 111636246;
+  function goal(name){ try { ym(ID, 'reachGoal', name); } catch(e){} }
+
+  document.querySelectorAll('a[href^="tel:"]').forEach(function(a){
+    a.addEventListener('click', function(){ goal('kp_phone'); });
+  });
+  document.querySelectorAll('a[href*="t.me"]').forEach(function(a){
+    a.addEventListener('click', function(){ goal('kp_telegram'); });
+  });
+  document.querySelectorAll('a[href^="mailto:"]').forEach(function(a){
+    a.addEventListener('click', function(){ goal('kp_mail'); });
+  });
+  document.querySelectorAll('.case').forEach(function(a){
+    a.addEventListener('click', function(){ goal('kp_case'); });
+  });
+
+  // дочитал до цен и до конца — видно, насколько предложение зашло
+  var seen = {};
+  var marks = [['#catalog','kp_prices'], ['#pay','kp_payment'], ['#contacts','kp_end']];
+  var io = new IntersectionObserver(function(es){
+    es.forEach(function(e){
+      if (!e.isIntersecting) return;
+      var id = '#' + e.target.id;
+      marks.forEach(function(m){
+        if (m[0] === id && !seen[m[1]]) { seen[m[1]] = 1; goal(m[1]); }
+      });
+    });
+  }, {threshold: 0.35});
+  marks.forEach(function(m){
+    var el = document.querySelector(m[0]);
+    if (el) io.observe(el);
+  });
+})();
+
+
 // раскрытие видео по клику
 const lb=document.getElementById('lb'), lbv=document.getElementById('lbv');
 document.querySelectorAll('.media.has-video').forEach(m=>{
@@ -891,5 +929,18 @@ if('IntersectionObserver' in window){
   document.querySelectorAll('.rv').forEach(el=>el.classList.add('in'));
 }
 </script>
+
+<!-- Яндекс.Метрика: тот же счётчик сайта, визиты помечены параметром kp,
+     чтобы не смешивались с трафиком naezamedia.ru -->
+<script>
+   (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+   m[i].l=1*new Date();
+   for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+   k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+   (window, document,'script','https://mc.yandex.ru/metrika/tag.js','ym');
+   ym(111636246, 'init', {defer:true, clickmap:true, trackLinks:true, accurateTrackBounce:true});
+   ym(111636246, 'params', {kp: 'idalite', tip: 'partner'});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/111636246" style="position:absolute;left:-9999px" alt="" /></div></noscript>
 </body>
 </html>
