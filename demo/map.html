@@ -1187,7 +1187,7 @@ el('cCta').addEventListener('click', ()=>{
 /* ---- pins: DOM labels tracking each block's roof in screen space ---- */
 const pinsBox = document.getElementById('pins');
 const pins = BUILDINGS.map(B=>{
-  const top = Math.max.apply(null, B.steps.map(s=> s[2]))*FLOOR_H + 4.4 + 9;
+  const top = Math.max.apply(null, B.steps.map(s=> s[2]))*FLOOR_H + 4.4 + 4;
   const node = document.createElement('button');
   node.className = 'pin';
   node.type = 'button';

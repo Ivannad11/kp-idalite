@@ -455,8 +455,15 @@ html.js .rv.in{opacity:1;transform:none}
 <style>
 .demoframe{position:relative;border:1px solid var(--line);overflow:hidden;background:var(--stripe)}
 .demoframe iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block}
-.demofoot{display:flex;flex-wrap:wrap;gap:8px 26px;margin-top:14px}
-.demofoot span{color:var(--fgd)}
+.demofoot{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;
+  gap:14px 26px;margin-top:14px}
+.demostats{display:flex;flex-wrap:wrap;gap:6px 26px}
+.demostats span{color:var(--fgd)}
+.demofull{height:42px;padding:0 18px;gap:9px;font-size:14px}
+.demofull svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;flex:none}
+/* в полноэкранном режиме рамка теряет пропорцию и занимает весь экран */
+.demoframe:fullscreen{aspect-ratio:auto;width:100%;height:100%;border:0}
+.demoframe:-webkit-full-screen{aspect-ratio:auto;width:100%;height:100%;border:0}
 @media(max-width:720px){.demoframe{aspect-ratio:4/5}}
 </style>
 <section id="demo">
@@ -468,10 +475,16 @@ html.js .rv.in{opacity:1;transform:none}
     <div class="demoframe r169 rv">
       <iframe src="demo/map.html" title="Интерактивная 3D-карта квартала" loading="lazy" allowfullscreen></iframe>
     </div>
-    <div class="demofoot mono">
-      <span>Страница весит 45 КБ</span>
-      <span>Вся сцена — 5 вызовов отрисовки</span>
-      <span>Сервер в отрисовке не участвует</span>
+    <div class="demofoot">
+      <div class="demostats mono">
+        <span>Страница весит 45 КБ</span>
+        <span>Вся сцена — 5 вызовов отрисовки</span>
+        <span>Сервер в отрисовке не участвует</span>
+      </div>
+      <a class="btn ghost demofull" id="demoFull" href="demo/map.html" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+        Карта на весь экран
+      </a>
     </div>
   </div>
 </section>
@@ -965,6 +978,22 @@ if('IntersectionObserver' in window){
 }else{
   document.querySelectorAll('.rv').forEach(el=>el.classList.add('in'));
 }
+
+/* «Карта на весь экран»: где есть полноэкранный режим — разворачиваем рамку на месте,
+   где его нет (Safari на iPhone не разворачивает iframe) — ссылка просто открывает
+   карту отдельной вкладкой, как и написано в атрибуте href */
+(function(){
+  const btn = document.getElementById('demoFull');
+  const box = document.querySelector('.demoframe');
+  if(!btn || !box) return;
+  const req = box.requestFullscreen || box.webkitRequestFullscreen;
+  if(!req) return;
+  btn.addEventListener('click', e=>{
+    e.preventDefault();
+    const p = req.call(box);
+    if(p && p.catch) p.catch(()=>window.open(btn.href, '_blank', 'noopener'));
+  });
+})();
 </script>
 
 <!-- Яндекс.Метрика: тот же счётчик сайта, визиты помечены параметром kp,
