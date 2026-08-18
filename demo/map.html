@@ -882,7 +882,13 @@ canvas.addEventListener('pointerup', endPointer);
 canvas.addEventListener('pointercancel', endPointer);
 canvas.addEventListener('wheel', e=>{
   e.preventDefault();
-  cam.distT = clamp(cam.distT * (1 + Math.sign(e.deltaY)*0.09), 46, 300);
+  // scale by the actual delta, not just its sign: a trackpad sends many small
+  // events and a sign-based step turns each of them into a full jump
+  let d = e.deltaY;
+  if(e.deltaMode === 1) d *= 16;        // lines
+  else if(e.deltaMode === 2) d *= 100;  // pages
+  const step = clamp(d * 0.0013, -0.16, 0.16);
+  cam.distT = clamp(cam.distT * Math.exp(step), 46, 300);
   orbiting=false; syncOrbitBtn();
 }, {passive:false});
 
@@ -1035,7 +1041,7 @@ function frame(now){
   if(orbiting) cam.azT += 0.0016;
   cam.az = lerp(cam.az, cam.azT, k);
   cam.el = lerp(cam.el, cam.elT, k);
-  cam.dist = lerp(cam.dist, cam.distT, k);
+  cam.dist = lerp(cam.dist, cam.distT, REDUCED ? 1 : 0.065);  // zoom eases in slower than rotation
   cam.tx = lerp(cam.tx, cam.txT, k);
   cam.ty = lerp(cam.ty, cam.tyT, k);
   cam.tz = lerp(cam.tz, cam.tzT, k);
