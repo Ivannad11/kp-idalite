@@ -90,11 +90,13 @@
   display:flex; justify-content:space-between; align-items:flex-end; gap:14px;
   pointer-events:none; z-index:5}
 
-.card{pointer-events:auto; background:var(--panel); backdrop-filter:blur(14px);
+.card{pointer-events:none; background:var(--panel); backdrop-filter:blur(14px);
   border:1px solid var(--line); border-radius:var(--radius);
   width:272px; padding:14px 15px 15px; opacity:0; transform:translateY(8px);
-  transition:opacity .28s ease, transform .28s ease}
-.card.on{opacity:1; transform:none}
+  visibility:hidden;
+  transition:opacity .28s ease, transform .28s ease, visibility 0s .28s}
+/* while hidden the card must not sit on top of the scene swallowing touches */
+.card.on{opacity:1; transform:none; visibility:visible; pointer-events:auto; transition-delay:0s}
 .card h2{font-family:'Alumni Sans',system-ui,sans-serif; font-weight:700; font-size:33px;
   line-height:.88; margin:5px 0 10px; text-transform:uppercase}
 .rows{display:flex; flex-direction:column; gap:0; margin-bottom:12px}
@@ -914,7 +916,15 @@ let dragging=false, lastX=0, lastY=0, pointers=new Map(), pinchStart=0, distStar
 // pointerdown makes Safari drop the rest of the gesture entirely.
 const TOUCH = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
 
-if(!TOUCH) canvas.addEventListener('pointerdown', e=>{
+const surface = document.querySelector('.wrap');
+// taps that land on the HUD (buttons, pins, the open card) are not camera gestures
+function onChrome(e){
+  const t = e.target;
+  return !!(t && t.closest && t.closest('button, .card.on, .badge, .metrics, .hint'));
+}
+
+if(!TOUCH) surface.addEventListener('pointerdown', e=>{
+  if(onChrome(e)) return;
   pointers.set(e.pointerId, {x:e.clientX, y:e.clientY});
   if(pointers.size===1){ dragging=true; lastX=e.clientX; lastY=e.clientY; moved=0; canvas.classList.add('dragging'); orbiting=false; syncOrbitBtn(); touched(); }
   else if(pointers.size===2){
@@ -924,7 +934,7 @@ if(!TOUCH) canvas.addEventListener('pointerdown', e=>{
   }
   try{ canvas.setPointerCapture(e.pointerId); }catch(err){}
 });
-if(!TOUCH) canvas.addEventListener('pointermove', e=>{
+if(!TOUCH) surface.addEventListener('pointermove', e=>{
   if(dragging && e.cancelable) e.preventDefault();
   if(pointers.has(e.pointerId)) pointers.set(e.pointerId, {x:e.clientX, y:e.clientY});
   if(pointers.size===2){
@@ -956,14 +966,15 @@ function endPointer(e){
   }
 }
 if(!TOUCH){
-  canvas.addEventListener('pointerup', endPointer);
-  canvas.addEventListener('pointercancel', endPointer);
-  canvas.addEventListener('lostpointercapture', endPointer);
+  surface.addEventListener('pointerup', endPointer);
+  surface.addEventListener('pointercancel', endPointer);
+  surface.addEventListener('lostpointercapture', endPointer);
 }
 
 /* ---- primary input path on phones and tablets ---- */
 let tLastX=0, tLastY=0, tMoved=0, tPinch=0, tDistStart=0;
-canvas.addEventListener('touchstart', e=>{
+surface.addEventListener('touchstart', e=>{
+  if(onChrome(e)) return;
   touched(); orbiting=false; syncOrbitBtn();
   if(e.touches.length===1){
     dragging=true; tMoved=0;
@@ -975,7 +986,7 @@ canvas.addEventListener('touchstart', e=>{
   }
   if(e.cancelable) e.preventDefault();
 }, {passive:false});
-canvas.addEventListener('touchmove', e=>{
+surface.addEventListener('touchmove', e=>{
   if(e.touches.length===2){
     const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,
                        e.touches[0].clientY-e.touches[1].clientY);
@@ -990,7 +1001,7 @@ canvas.addEventListener('touchmove', e=>{
   }
   if(e.cancelable) e.preventDefault();
 }, {passive:false});
-canvas.addEventListener('touchend', e=>{
+surface.addEventListener('touchend', e=>{
   if(dragging && tMoved < 14 && e.changedTouches.length){
     handleClick({clientX:e.changedTouches[0].clientX, clientY:e.changedTouches[0].clientY});
   }
@@ -1005,7 +1016,7 @@ if(/(\?|&)debug/.test(location.search)){
   document.querySelector('.wrap').appendChild(box);
   const seen = {touchstart:0, touchmove:0, touchend:0, pointerdown:0, pointermove:0, wheel:0};
   ['touchstart','touchmove','touchend','pointerdown','pointermove','wheel'].forEach(n=>{
-    canvas.addEventListener(n, ()=>{ seen[n]++; }, {passive:true, capture:true});
+    surface.addEventListener(n, ()=>{ seen[n]++; }, {passive:true, capture:true});
   });
   setInterval(()=>{
     box.textContent =
@@ -1017,7 +1028,8 @@ if(/(\?|&)debug/.test(location.search)){
   }, 250);
 }
 
-canvas.addEventListener('wheel', e=>{
+surface.addEventListener('wheel', e=>{
+  if(onChrome(e)) return;
   e.preventDefault();
   // scale by the actual delta, not just its sign: a trackpad sends many small
   // events and a sign-based step turns each of them into a full jump
