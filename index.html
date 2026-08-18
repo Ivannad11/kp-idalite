@@ -46,11 +46,13 @@ header .wrap{height:100%;display:flex;align-items:center;justify-content:space-b
 .cobrand{display:flex;align-items:center;gap:12px;font-family:'Alumni Sans';font-weight:800;
   text-transform:uppercase;font-size:19px;letter-spacing:-0.01em;line-height:1}
 .cobrand img{height:26px;width:auto;display:block;border-radius:4px}
+.cobrand .nm{letter-spacing:-0.015em}
+.cobrand .nm i{font-style:normal;font-weight:600;opacity:.82}
 .cobrand .u{display:flex;align-items:center;gap:9px}
 .cobrand .x{color:var(--fgd);font-size:15px;font-weight:400}
 .cobrand .p2{color:var(--fg)}
-nav{display:flex;gap:28px}
-nav a{font:500 15px/1 'Golos Text';color:var(--fgd);transition:var(--tr)}
+nav{display:flex;gap:22px}
+nav a{font:500 15px/1 'Golos Text';color:var(--fgd);transition:var(--tr);white-space:nowrap}
 nav a:hover{color:var(--fg)}
 .btn{display:inline-flex;align-items:center;justify-content:center;height:50px;padding:0 28px;
   border-radius:999px;font:500 16px/1 'Golos Text';transition:var(--tr);border:1px solid transparent;cursor:pointer}
@@ -125,6 +127,17 @@ section:first-of-type{border-top:0}
 .arg{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:start}
 .argbox{border-left:2px solid var(--acc);padding-left:28px}
 .argbox h3{margin-bottom:16px}
+
+/* ---------- кейсы ---------- */
+.case{border:1px solid var(--line);background:var(--bg2);overflow:hidden;display:flex;
+  flex-direction:column;transition:var(--tr);color:inherit}
+.case:hover{border-color:var(--acc);transform:translateY(-4px)}
+.case .ph{aspect-ratio:16/9;overflow:hidden;border-bottom:1px solid var(--line)}
+.case .ph img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .6s ease-out}
+.case:hover .ph img{transform:scale(1.03)}
+.case .cb{padding:26px;display:flex;flex-direction:column;gap:14px;flex:1}
+.case h3{margin-bottom:8px}
+.case .go{font:var(--mono4);color:var(--fg);text-transform:uppercase;letter-spacing:.01em}
 
 /* ---------- каталог ---------- */
 .pack{border:1px solid var(--line);background:var(--bg2);padding:26px;display:flex;
@@ -229,6 +242,7 @@ html.js .rv.in{opacity:1;transform:none}
 }
 
 /* ---------- адаптив ---------- */
+@media (max-width:1120px){nav a:nth-child(n+5){display:none}}
 @media (max-width:1200px){
   .g3{grid-template-columns:repeat(2,1fr)}
   .arg{grid-template-columns:1fr;gap:40px}
@@ -276,9 +290,10 @@ html.js .rv.in{opacity:1;transform:none}
 
 <header>
   <div class="wrap">
-    <div class="cobrand"><span class="u"><img src="img/naeza-mark.svg" alt="Naeza Media"><span>Naeza Media</span></span><span class="x">×</span><span class="u"><img src="img/ida-mark.svg" alt="Ида.Лайт"><span class="p2">Ида.Лайт</span></span></div>
+    <div class="cobrand"><span class="u"><img src="img/naeza-mark.svg" alt="Naeza Media"><span class="nm">NAEZA<i>MEDIA</i></span></span><span class="x">×</span><span class="u"><img src="img/ida-mark.svg" alt="Ида.Лайт"><span class="p2">Ида.Лайт</span></span></div>
     <nav>
       <a href="#levels">Что делаем</a>
+      <a href="#cases">Работы</a>
       <a href="#catalog">Каталог</a>
       <a href="#pay">Оплата</a>
       <a href="#support">Поддержка</a>
@@ -408,6 +423,39 @@ html.js .rv.in{opacity:1;transform:none}
   </div>
 </section>
 
+
+<!-- ===================== КЕЙСЫ ===================== -->
+<section id="cases">
+  <div class="wrap">
+    <div class="shead"><span class="mono">Работы</span><h2>Такое уже стоит и работает</h2></div>
+    <p class="lead rv" style="margin-bottom:44px">Интерактивные макеты с собственным софтом: выбор корпуса
+      и этажа, подсветка объектов, управление с планшета. Те же механики ложатся в браузер на сайт застройщика.</p>
+
+    <div class="grid g2">
+      <a class="case rv" href="https://naezamedia.ru/cases/origana/?utm_source=kp&amp;utm_medium=partner&amp;utm_campaign=idalite&amp;utm_content=case_origana" target="_blank" rel="noopener">
+        <div class="ph"><img src="media/cases/origana.jpg" alt="Интерактивный макет «Оригана»" loading="lazy"></div>
+        <div class="cb">
+          <div>
+            <h3>Оригана</h3>
+            <p>ПО для интерактивного макета жилого комплекса: выбор корпуса и этажа, планировки, управление с планшета.</p>
+          </div>
+          <span class="go">Смотреть кейс →</span>
+        </div>
+      </a>
+
+      <a class="case rv" href="https://naezamedia.ru/cases/encore/?utm_source=kp&amp;utm_medium=partner&amp;utm_campaign=idalite&amp;utm_content=case_encore" target="_blank" rel="noopener">
+        <div class="ph"><img src="media/cases/encore.jpg" alt="Интерактивный макет Encore" loading="lazy"></div>
+        <div class="cb">
+          <div>
+            <h3>Encore</h3>
+            <p>Интерактивный макет города-курорта: подсветка территории, экраны, единый интерфейс для показа гостям.</p>
+          </div>
+          <span class="go">Смотреть кейс →</span>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
 <!-- ===================== КАТАЛОГ ===================== -->
 <section id="catalog">
   <div class="wrap">
@@ -694,13 +742,14 @@ html.js .rv.in{opacity:1;transform:none}
   <div class="wrap">
     <div class="fgrid">
       <div>
-        <div class="cobrand" style="font-size:21px;margin-bottom:16px"><span class="u"><img src="img/naeza-mark.svg" alt="" style="height:30px"><span>Naeza Media</span></span><span class="x">×</span><span class="u"><img src="img/ida-mark.svg" alt="" style="height:30px"><span class="p2">Ида.Лайт</span></span></div>
+        <div class="cobrand" style="font-size:21px;margin-bottom:16px"><span class="u"><img src="img/naeza-mark.svg" alt="" style="height:30px"><span class="nm">NAEZA<i>MEDIA</i></span></span><span class="x">×</span><span class="u"><img src="img/ida-mark.svg" alt="" style="height:30px"><span class="p2">Ида.Лайт</span></span></div>
         <p>Производство мультимедиа-контента с 2023 года: 3D-сцены и рендеры,
            интерактивные карты и макеты, видеомэппинг, музейные экспозиции.</p>
       </div>
       <div>
         <div class="mono" style="margin-bottom:16px">Разделы</div>
-        <p><a href="#levels">Что делаем</a><br><a href="#catalog">Каталог</a><br>
+        <p><a href="#levels">Что делаем</a><br><a href="#cases">Работы</a>
+      <a href="#catalog">Каталог</a><br>
            <a href="#pay">Оплата</a><br><a href="#support">Поддержка</a>
       <a href="#embed">Встраивание</a></p>
       </div>
