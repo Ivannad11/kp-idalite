@@ -909,10 +909,12 @@ function camPos(){
 /* ---- input ---- */
 let dragging=false, lastX=0, lastY=0, pointers=new Map(), pinchStart=0, distStart=0, moved=0;
 
-canvas.addEventListener('pointerdown', e=>{
-  // register the pointer BEFORE capturing it: setPointerCapture throws on some
-  // touch browsers, and an exception here used to abort the whole handler —
-  // which is why phones could only press the buttons and never drag the scene
+// Touch devices are driven by touch events only, pointer events only on the rest.
+// Running both paths double-counts drags, and calling preventDefault inside
+// pointerdown makes Safari drop the rest of the gesture entirely.
+const TOUCH = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
+
+if(!TOUCH) canvas.addEventListener('pointerdown', e=>{
   pointers.set(e.pointerId, {x:e.clientX, y:e.clientY});
   if(pointers.size===1){ dragging=true; lastX=e.clientX; lastY=e.clientY; moved=0; canvas.classList.add('dragging'); orbiting=false; syncOrbitBtn(); touched(); }
   else if(pointers.size===2){
@@ -920,10 +922,9 @@ canvas.addEventListener('pointerdown', e=>{
     pinchStart=Math.hypot(p[0].x-p[1].x, p[0].y-p[1].y);
     distStart=cam.distT;
   }
-  if(e.cancelable) e.preventDefault();
   try{ canvas.setPointerCapture(e.pointerId); }catch(err){}
-}, {passive:false});
-canvas.addEventListener('pointermove', e=>{
+});
+if(!TOUCH) canvas.addEventListener('pointermove', e=>{
   if(dragging && e.cancelable) e.preventDefault();
   if(pointers.has(e.pointerId)) pointers.set(e.pointerId, {x:e.clientX, y:e.clientY});
   if(pointers.size===2){
@@ -954,17 +955,15 @@ function endPointer(e){
     dragging=false; canvas.classList.remove('dragging');
   }
 }
-canvas.addEventListener('pointerup', endPointer);
-canvas.addEventListener('pointercancel', endPointer);
-canvas.addEventListener('lostpointercapture', endPointer);
+if(!TOUCH){
+  canvas.addEventListener('pointerup', endPointer);
+  canvas.addEventListener('pointercancel', endPointer);
+  canvas.addEventListener('lostpointercapture', endPointer);
+}
 
-/* ---- touch fallback: only arms itself if pointer events never reached us ---- */
-let sawPointer = false;
-canvas.addEventListener('pointerdown', ()=>{ sawPointer = true; }, {passive:true});
-
+/* ---- primary input path on phones and tablets ---- */
 let tLastX=0, tLastY=0, tMoved=0, tPinch=0, tDistStart=0;
 canvas.addEventListener('touchstart', e=>{
-  if(sawPointer) return;
   touched(); orbiting=false; syncOrbitBtn();
   if(e.touches.length===1){
     dragging=true; tMoved=0;
@@ -977,7 +976,6 @@ canvas.addEventListener('touchstart', e=>{
   if(e.cancelable) e.preventDefault();
 }, {passive:false});
 canvas.addEventListener('touchmove', e=>{
-  if(sawPointer) return;
   if(e.touches.length===2){
     const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,
                        e.touches[0].clientY-e.touches[1].clientY);
@@ -993,12 +991,32 @@ canvas.addEventListener('touchmove', e=>{
   if(e.cancelable) e.preventDefault();
 }, {passive:false});
 canvas.addEventListener('touchend', e=>{
-  if(sawPointer) return;
   if(dragging && tMoved < 14 && e.changedTouches.length){
     handleClick({clientX:e.changedTouches[0].clientX, clientY:e.changedTouches[0].clientY});
   }
   if(!e.touches.length){ dragging=false; tPinch=0; }
 }, {passive:false});
+/* ---- add ?debug to the URL to see what the device actually reports ---- */
+if(/(\?|&)debug/.test(location.search)){
+  const box = document.createElement('div');
+  box.style.cssText = 'position:absolute;left:12px;top:96px;z-index:9;padding:8px 10px;' +
+    'background:rgba(0,0,0,.82);color:#F0A93B;font:10px/1.5 ui-monospace,monospace;' +
+    'white-space:pre;pointer-events:none;border-radius:3px;max-width:80%';
+  document.querySelector('.wrap').appendChild(box);
+  const seen = {touchstart:0, touchmove:0, touchend:0, pointerdown:0, pointermove:0, wheel:0};
+  ['touchstart','touchmove','touchend','pointerdown','pointermove','wheel'].forEach(n=>{
+    canvas.addEventListener(n, ()=>{ seen[n]++; }, {passive:true, capture:true});
+  });
+  setInterval(()=>{
+    box.textContent =
+      'TOUCH=' + TOUCH + '  maxTouch=' + navigator.maxTouchPoints + '\n' +
+      'touchstart ' + seen.touchstart + '  move ' + seen.touchmove + '  end ' + seen.touchend + '\n' +
+      'pointerdown ' + seen.pointerdown + '  move ' + seen.pointermove + '  wheel ' + seen.wheel + '\n' +
+      'drag=' + dragging + '  az=' + cam.azT.toFixed(2) + '  dist=' + cam.distT.toFixed(0) + '\n' +
+      'canvas ' + W + '×' + H + '  fit=' + fitDistance().toFixed(0);
+  }, 250);
+}
+
 canvas.addEventListener('wheel', e=>{
   e.preventDefault();
   // scale by the actual delta, not just its sign: a trackpad sends many small
