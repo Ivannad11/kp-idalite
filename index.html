@@ -1,0 +1,751 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Naeza Media × Ида.Лайт — партнёрское предложение</title>
+<link rel="stylesheet" href="fonts/fonts.css">
+<style>
+:root{
+  --bg:oklch(0.16 0.006 260);
+  --bg2:oklch(0.205 0.008 260);
+  --line:oklch(0.32 0.008 260);
+  --fg:oklch(0.96 0.004 250);
+  --fgd:oklch(0.70 0.008 260);
+  --acc:oklch(0.96 0.004 250);      /* акцент белый — как на боевом сайте */
+  --acc2:oklch(0.72 0.16 62);
+  --onacc:oklch(0.16 0.006 260);    /* текст на акценте тёмный */
+  --stripe:repeating-linear-gradient(135deg,oklch(0.225 0.01 260) 0 8px,oklch(0.19 0.01 260) 8px 16px);
+  --mono:300 10.5px/1.5 'Martian Mono',monospace;
+  --mono4:400 10.5px/1.5 'Martian Mono',monospace;
+  --tr:border-color .3s ease-out,transform .3s ease-out,color .25s ease-out,background-color .25s ease-out;
+  --pad:48px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{max-width:100%;background:var(--bg);color:var(--fg);font:400 16px/1.55 'Golos Text',system-ui,sans-serif;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden}
+.wrap{max-width:1120px;margin:0 auto;padding:0 var(--pad)}
+h1,h2,h3,.big{font-family:'Alumni Sans',system-ui,sans-serif;
+  text-transform:uppercase;text-wrap:balance}
+/* крупный кегль только в герое, как на сайте */
+h1{font:800 clamp(36px,5.4vw,84px)/.92 'Alumni Sans',sans-serif;letter-spacing:-0.012em}
+h2{font:700 25px 'Alumni Sans',sans-serif;letter-spacing:-0.01em;line-height:1.04}
+h3{font:700 19px 'Alumni Sans',sans-serif;letter-spacing:-0.01em;line-height:1.1}
+p{text-wrap:pretty;color:var(--fgd)}
+.mono{font:var(--mono);text-transform:uppercase;letter-spacing:.01em;color:var(--fgd)}
+.mono.on{color:var(--acc);font:var(--mono4)}
+a{color:inherit;text-decoration:none}
+
+/* ---------- хедер ---------- */
+header{position:fixed;inset:0 0 auto;height:72px;z-index:50;
+  background:oklch(0.16 0.006 260/.82);backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--line)}
+header .wrap{height:100%;display:flex;align-items:center;justify-content:space-between;gap:24px}
+.cobrand{display:flex;align-items:center;gap:12px;font-family:'Alumni Sans';font-weight:800;
+  text-transform:uppercase;font-size:19px;letter-spacing:-0.01em;line-height:1}
+.cobrand img{height:26px;width:auto;display:block;border-radius:4px}
+.cobrand .u{display:flex;align-items:center;gap:9px}
+.cobrand .x{color:var(--fgd);font-size:15px;font-weight:400}
+.cobrand .p2{color:var(--fg)}
+nav{display:flex;gap:28px}
+nav a{font:500 15px/1 'Golos Text';color:var(--fgd);transition:var(--tr)}
+nav a:hover{color:var(--fg)}
+.btn{display:inline-flex;align-items:center;justify-content:center;height:50px;padding:0 28px;
+  border-radius:999px;font:500 16px/1 'Golos Text';transition:var(--tr);border:1px solid transparent;cursor:pointer}
+.btn.primary{background:var(--acc);color:var(--onacc)}
+.btn.primary:hover{transform:translateY(-2px)}
+.btn.ghost{border-color:var(--line);color:var(--fg)}
+.btn.ghost:hover{border-color:var(--acc)}
+header .btn{height:44px;padding:0 22px;font-size:15px}
+
+/* ---------- секции ---------- */
+section{padding:100px 0;border-top:1px solid var(--line)}
+section:first-of-type{border-top:0}
+.shead{display:flex;align-items:baseline;gap:18px;margin-bottom:44px}
+.shead .mono{white-space:nowrap}
+.lead{max-width:700px;font-size:16px;margin-top:22px}
+
+/* ---------- герой ---------- */
+.hero{padding:calc(72px + 84px) 0 84px;border-top:0}
+.hero h1{margin-bottom:28px}
+.hero h1 em{font-style:normal;color:var(--acc)}
+.hero .lead{font-size:17px;max-width:640px}
+.hero .cta{display:flex;gap:14px;flex-wrap:wrap;margin-top:44px}
+.heromedia{margin-top:72px}
+
+/* ---------- медиа-слоты ---------- */
+.media{background:var(--stripe);border:1px solid var(--line);position:relative;
+  display:flex;align-items:flex-end;padding:16px;overflow:hidden}
+.media::after{content:attr(data-label);font:var(--mono);text-transform:uppercase;
+  color:var(--fgd);letter-spacing:.01em;position:relative;z-index:3}
+.media video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;z-index:1}
+.media.has-video{cursor:zoom-in}
+.media.has-video .zoom{position:absolute;right:12px;top:12px;z-index:4;width:34px;height:34px;
+  border:1px solid oklch(0.96 0.004 250/.5);border-radius:6px;display:flex;align-items:center;
+  justify-content:center;background:oklch(0.12 0.006 260/.45);backdrop-filter:blur(6px);
+  opacity:0;transition:opacity .25s ease-out}
+.media.has-video:hover .zoom{opacity:1}
+.media.has-video .zoom svg{width:15px;height:15px;stroke:oklch(0.96 0.004 250);fill:none;stroke-width:2}
+#lb{position:fixed;inset:0;z-index:200;background:oklch(0.10 0.006 260/.94);
+  display:none;align-items:center;justify-content:center;padding:32px;cursor:zoom-out}
+#lb.on{display:flex}
+#lb video{max-width:100%;max-height:100%;width:auto;border:1px solid var(--line);cursor:default}
+#lb .close{position:absolute;top:20px;right:24px;font:var(--mono);color:var(--fgd);
+  text-transform:uppercase;letter-spacing:.01em;cursor:pointer;padding:8px}
+#lb .close:hover{color:var(--fg)}
+/* у видео подписи не показываем — кадр говорит сам за себя */
+.media.has-video::after{content:none}
+.media.has-video{padding:0}
+.r169{aspect-ratio:16/9}
+.r45{aspect-ratio:4/5}
+.r11{aspect-ratio:4/3}
+.r31{aspect-ratio:16/9}
+
+/* ---------- сетки ---------- */
+.grid{display:grid;gap:20px}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g12{grid-template-columns:repeat(12,1fr)}
+
+/* ---------- уровни ---------- */
+.level{border:1px solid var(--line);background:var(--bg2);padding:0;overflow:hidden;
+  display:flex;flex-direction:column;transition:var(--tr)}
+.level:hover{border-color:var(--acc);transform:translateY(-4px)}
+.level .media{border:0;border-bottom:1px solid var(--line)}
+.level .body{padding:24px;display:flex;flex-direction:column;gap:14px;flex:1}
+.level .num{font:var(--mono4);color:var(--fg)}
+.level ul{list-style:none;display:flex;flex-direction:column;gap:11px;margin-top:6px}
+.level li{color:var(--fgd);font-size:15px;padding-left:18px;position:relative}
+.level li::before{content:'';position:absolute;left:0;top:9px;width:6px;height:6px;
+  background:var(--acc);border-radius:50%}
+
+/* ---------- аргумент ---------- */
+.arg{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:start}
+.argbox{border-left:2px solid var(--acc);padding-left:28px}
+.argbox h3{margin-bottom:16px}
+
+/* ---------- каталог ---------- */
+.pack{border:1px solid var(--line);background:var(--bg2);padding:26px;display:flex;
+  flex-direction:column;gap:16px;transition:var(--tr)}
+.pack:hover{border-color:var(--acc)}
+.pack.hi{background:var(--acc);color:var(--onacc);border-color:var(--acc)}
+.pack.hi p,.pack.hi li,.pack.hi .mono{color:oklch(0.30 0.01 260)}
+.pack.hi .price{color:var(--onacc)}
+.pack .who{font:var(--mono4);color:var(--fg)}
+.pack.hi .who{color:oklch(0.16 0.006 260)}
+.price{font-family:'Alumni Sans';font-weight:800;font-size:29px;line-height:1;
+  letter-spacing:-0.01em;color:var(--fg)}
+.price small{font-family:'Golos Text';font-weight:400;font-size:15px;color:var(--fgd);
+  display:block;margin-top:8px;letter-spacing:0;text-transform:none}
+.pack.hi .price small{color:oklch(0.34 0.01 260)}
+.pack ul{list-style:none;display:flex;flex-direction:column;gap:11px}
+.pack li{font-size:15px;color:var(--fgd);padding-left:18px;position:relative}
+.pack li::before{content:'';position:absolute;left:0;top:9px;width:6px;height:6px;
+  background:var(--acc);border-radius:50%}
+.pack.hi li::before{background:var(--onacc)}
+
+/* ---------- таблица расчёта ---------- */
+table{width:100%;border-collapse:collapse;margin-top:26px}
+th,td{text-align:left;padding:14px 12px;border-bottom:1px solid var(--line);font-size:15px}
+th{font:var(--mono4);text-transform:uppercase;color:var(--fgd);letter-spacing:.01em}
+td.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+tr:last-child td{border-bottom:0}
+tr.total td{font-weight:500;color:var(--fg);border-top:1px solid var(--acc);border-bottom:0;padding-top:22px}
+
+/* ---------- модели оплаты ---------- */
+.pay{border:1px solid var(--line);padding:28px;background:var(--bg2)}
+.pay h3{margin-bottom:20px}
+.pay .tag{font:var(--mono4);color:var(--acc);display:block;margin-bottom:14px}
+
+/* ---------- как встраивается (светлый блок) ---------- */
+.light{background:oklch(0.97 0.003 250);color:oklch(0.22 0.01 260)}
+.light h2,.light h3{color:oklch(0.18 0.01 260)}
+.light p{color:oklch(0.42 0.01 260)}
+.light .mono{color:oklch(0.5 0.01 260)}
+.light .argbox{border-left-color:oklch(0.2 0.01 260)}
+.light .media{background:repeating-linear-gradient(135deg,oklch(0.93 0.004 250) 0 8px,oklch(0.90 0.004 250) 8px 16px);
+  border-color:oklch(0.86 0.005 250)}
+.light .media::after{color:oklch(0.5 0.01 260)}
+.light .card{background:#fff;border:1px solid oklch(0.88 0.005 250);padding:32px}
+/* макет нашего блока на странице «Интеграции» — в их подаче */
+.ida{background:#3b4fe3;border-radius:24px;overflow:hidden;color:#fff;display:grid;
+  grid-template-columns:1fr 1.05fr;min-height:300px;position:relative;
+  font-family:-apple-system,'Inter','Helvetica Neue',Arial,sans-serif}
+.ida .t{padding:38px 36px;display:flex;flex-direction:column;justify-content:space-between}
+.ida h4{font:700 27px/1.12 -apple-system,'Inter',Arial,sans-serif;letter-spacing:-0.02em;
+  margin:0 0 12px;text-transform:none}
+.ida p{font-size:15px;line-height:1.5;color:rgba(255,255,255,.84);margin:0}
+.ida .b{align-self:flex-start;background:#131a3a;color:#fff;border-radius:999px;
+  padding:13px 24px;font-size:14px;font-weight:500;margin-top:22px}
+.ida .v{position:relative;overflow:hidden}
+.ida .v video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.ida .v::after{content:'';position:absolute;inset:0;
+  background:linear-gradient(90deg,#3b4fe3 0%,rgba(59,79,227,.5) 22%,transparent 55%)}
+.ida .tag{position:absolute;left:36px;top:30px;font:500 10.5px/1 monospace;
+  letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.72)}
+.ida .t{padding-top:60px}
+.idaside{background:#f2f3f7;border-radius:24px;padding:28px;color:#3a3f4d}
+.idaside h4{font:700 21px/1.15 -apple-system,'Inter',Arial,sans-serif;margin:0 0 10px;
+  color:#0d0f14;text-transform:none;letter-spacing:-0.01em}
+.idaside p{font-size:15px;line-height:1.5;color:#5b6070;margin:0}
+@media (max-width:900px){.ida{grid-template-columns:1fr}.ida .v{min-height:200px}}
+
+/* ---------- процесс ---------- */
+.steps{counter-reset:s}
+.step{display:grid;grid-template-columns:64px 1fr;gap:28px;padding:30px 0;
+  border-bottom:1px solid var(--line);align-items:start}
+.step:last-child{border-bottom:0}
+.step .n{font-family:'Alumni Sans';font-weight:800;font-size:29px;line-height:1;color:var(--acc)}
+.step h3{margin-bottom:8px}
+
+/* ---------- футер ---------- */
+footer{border-top:1px solid var(--line);padding:88px 0 48px}
+.fgrid{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:48px;margin-bottom:64px}
+.fnote{font:var(--mono);color:var(--fgd);padding-top:32px;border-top:1px solid var(--line);
+  display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap}
+
+/* ---------- бегущая строка ---------- */
+.ticker{overflow:hidden;border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+  padding:16px 0;white-space:nowrap}
+.ticker .row{display:inline-flex;gap:48px;animation:run 44s linear infinite}
+.ticker span{font-family:'Alumni Sans';font-weight:700;font-size:22px;text-transform:uppercase;
+  letter-spacing:-0.01em;color:var(--fgd)}
+.ticker span.a{color:var(--acc)}
+@keyframes run{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* ---------- появление ---------- */
+/* прячем только если скрипт жив — иначе документ окажется пустым при печати и без JS */
+html.js .rv{opacity:0;transform:translateY(24px);transition:opacity .7s cubic-bezier(.16,1,.3,1),transform .7s cubic-bezier(.16,1,.3,1)}
+html.js .rv.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){html.js .rv{opacity:1;transform:none}.ticker .row{animation:none}}
+@media print{
+  html.js .rv{opacity:1!important;transform:none!important}
+  body{background:#fff;color:#111}
+  header{position:static}
+  section{padding:32px 0;break-inside:avoid}
+  .media{min-height:180px}
+}
+
+/* ---------- адаптив ---------- */
+@media (max-width:1200px){
+  .g3{grid-template-columns:repeat(2,1fr)}
+  .arg{grid-template-columns:1fr;gap:40px}
+}
+@media (max-width:900px){
+  :root{--pad:20px}
+  section{padding:72px 0}
+  .hero{padding:calc(72px + 56px) 0 64px}
+  .g3,.g2{grid-template-columns:1fr}
+  .fgrid{grid-template-columns:1fr;gap:28px}
+  nav{display:none}
+  .shead{flex-direction:column;gap:6px;margin-bottom:28px}
+  .step{grid-template-columns:44px 1fr;gap:16px;padding:20px 0}
+  .step .n{font-size:24px}
+  /* таблицы должны читаться без горизонтального скролла */
+  th,td{padding:11px 0;font-size:14px}
+  .pack,.pay,.light .card,.idaside{padding:22px}
+  .level .body{padding:20px}
+  .price{font-size:26px}
+  .arg{gap:28px}
+  .argbox{padding-left:18px}
+  .ida{grid-template-columns:1fr}
+  .ida .v{min-height:190px;order:-1}
+  .ida .v::after{background:linear-gradient(0deg,#3b4fe3 0%,rgba(59,79,227,.35) 30%,transparent 70%)}
+  .ida .t{padding:24px 22px 26px}
+  .ida .tag{left:22px;top:auto;bottom:calc(100% - 190px + 14px)}
+  .ida h4{font-size:23px}
+  .btn{height:46px;padding:0 22px;font-size:15px}
+  .heromedia{margin-top:40px}
+  .ticker span{font-size:19px}
+  .ticker .row{gap:28px}
+}
+@media (max-width:420px){
+  h1{font-size:31px}
+  h2{font-size:22px}
+  .price{font-size:24px}
+  td.num{font-size:13px}
+  .cobrand{font-size:15px;gap:8px}
+  .cobrand img{height:21px}
+  header .btn{padding:0 16px;font-size:14px}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="cobrand"><span class="u"><img src="img/naeza-mark.svg" alt="Naeza Media"><span>Naeza Media</span></span><span class="x">×</span><span class="u"><img src="img/ida-mark.svg" alt="Ида.Лайт"><span class="p2">Ида.Лайт</span></span></div>
+    <nav>
+      <a href="#levels">Что делаем</a>
+      <a href="#catalog">Каталог</a>
+      <a href="#pay">Оплата</a>
+      <a href="#support">Поддержка</a>
+      <a href="#embed">Встраивание</a>
+      <a href="#process">Процесс</a>
+    </nav>
+    <a href="https://t.me/fillius_fortunae" class="btn primary" target="_blank" rel="noopener">Обсудить</a>
+  </div>
+</header>
+
+<!-- ===================== ГЕРОЙ ===================== -->
+<section class="hero">
+  <div class="wrap">
+    <div class="mono on rv">Партнёрское предложение · 2026</div>
+    <h1 class="rv" style="margin-top:20px">3D для жилых комплексов<br>на платформе <em>Ида.Лайт</em></h1>
+    <p class="lead rv">Берём на себя весь 3D для застройщиков, которые приходят к вам: сцены, рендеры,
+       интерактивную карту территории и выбор квартиры, связанный с вашей CRM.
+       Вы продаёте сайт — мы делаем так, чтобы на нём было что показать.</p>
+    <div class="cta rv">
+      <a href="#catalog" class="btn primary">Смотреть каталог</a>
+      <a href="#pay" class="btn ghost">Модели оплаты</a>
+    </div>
+    <div class="heromedia rv">
+      <div class="media r31 has-video" data-label="Действующий проект · облёт 3D-сцены комплекса"><video src="media/hero-flyover.mp4" autoplay muted loop playsinline preload="metadata"></video><span class="zoom"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== БЕГУЩАЯ СТРОКА ===================== -->
+<div class="ticker">
+  <div class="row">
+    <span>3D-сцены ЖК</span><span class="a">·</span>
+    <span>Экстерьерные рендеры</span><span class="a">·</span>
+    <span>Интерактивная карта</span><span class="a">·</span>
+    <span>Выбор квартиры</span><span class="a">·</span>
+    <span>Связка с CRM</span><span class="a">·</span>
+    <span>Аэропанорамы</span><span class="a">·</span>
+    <span>3D-сцены ЖК</span><span class="a">·</span>
+    <span>Экстерьерные рендеры</span><span class="a">·</span>
+    <span>Интерактивная карта</span><span class="a">·</span>
+    <span>Выбор квартиры</span><span class="a">·</span>
+    <span>Связка с CRM</span><span class="a">·</span>
+    <span>Аэропанорамы</span><span class="a">·</span>
+  </div>
+</div>
+
+<!-- ===================== ТРИ УРОВНЯ ===================== -->
+<section id="levels">
+  <div class="wrap">
+    <div class="shead"><span class="mono">Что делаем</span><h2>Три уровня — от картинки до софта</h2></div>
+    <p class="lead rv" style="margin-bottom:44px">Каждый следующий уровень строится на том же 3D,
+      что и предыдущий. Застройщик может начать с рендеров и дорасти до карты, не оплачивая моделирование заново.</p>
+
+    <div class="grid g3">
+      <article class="level rv">
+        <div class="media r169 has-video" data-label="Сцена комплекса с окружением и благоустройством"><video src="media/lvl1-scene.mp4" autoplay muted loop playsinline preload="metadata"></video><span class="zoom"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></span></div>
+        <div class="body">
+          <span class="num">Уровень 1</span>
+          <h3>3D-сцена и рендеры</h3>
+          <p>Не набор картинок, а собранная сцена комплекса: корпуса, рельеф, благоустройство, окружение.</p>
+          <ul>
+            <li>Модель комплекса и территории</li>
+            <li>Экстерьерные ракурсы под сайт и рекламу</li>
+            <li>День / вечер, времена года</li>
+            <li>Аэропанорамы и виды из окон</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="level rv">
+        <div class="media r169 has-video" data-label="Карта окрестностей: магазины, школы, транспорт"><video src="media/lvl2-map.mp4" autoplay muted loop playsinline preload="metadata"></video><span class="zoom"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></span></div>
+        <div class="body">
+          <span class="num">Уровень 2</span>
+          <h3>Интерактивная карта</h3>
+          <p>Та же сцена оживает в браузере: территорию можно вращать, приближать, разглядывать объекты.</p>
+          <ul>
+            <li>3D-карта территории в браузере</li>
+            <li>Вращение, зум, выбор корпуса</li>
+            <li>Точки интереса: школа, парковка, двор</li>
+            <li>Работает на телефоне</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="level rv">
+        <div class="media r169 has-video" data-label="Подбор квартиры: фильтры и подсветка на модели"><video src="media/lvl3-units.mp4" autoplay muted loop playsinline preload="metadata"></video><span class="zoom"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></span></div>
+        <div class="body">
+          <span class="num">Уровень 3</span>
+          <h3>Карта, связанная с CRM</h3>
+          <p>Карта становится инструментом продаж: покупатель сам находит квартиру и видит про неё всё.</p>
+          <ul>
+            <li>Корпус → этаж → квартира</li>
+            <li>Статус и цена из вашей CRM</li>
+            <li>Куда выходят окна и что видно</li>
+            <li>Галерея, планировка, заявка</li>
+          </ul>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== КЛЮЧЕВОЙ АРГУМЕНТ ===================== -->
+<section>
+  <div class="wrap">
+    <div class="arg">
+      <div class="rv">
+        <div class="shead"><span class="mono">Почему так</span></div>
+        <h2>Сцена дороже картинки<br>и дешевле в итоге</h2>
+        <div class="argbox" style="margin-top:36px">
+          <h3>Рендер — это тупик</h3>
+          <p>Пришёл новый корпус, поменялся фасад, нужен другой ракурс или зимний вид — визуализатор
+             считает всё заново, застройщик платит второй раз.</p>
+        </div>
+        <div class="argbox" style="margin-top:20px">
+          <h3>Сцена — это актив</h3>
+          <p>Один раз собранная модель отдаёт и картинки для рекламы, и карту на сайт, и выбор квартиры,
+             и ролик. Правки — это правки, а не новый проект.</p>
+        </div>
+        <p style="margin-top:20px">Для вас это означает простую вещь: клиент, купивший у нас 3D один раз,
+           возвращается за следующим уровнем, а не уходит искать другого подрядчика.</p>
+      </div>
+      <div class="rv">
+        <div class="media r169 has-video" data-label="Та же сцена: благоустройство двора с точками интереса"><video src="media/arg-yard.mp4" autoplay muted loop playsinline preload="metadata"></video><span class="zoom"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== КАТАЛОГ ===================== -->
+<section id="catalog">
+  <div class="wrap">
+    <div class="shead"><span class="mono">Каталог</span><h2>Четыре пакета под разных клиентов</h2></div>
+    <p class="lead rv" style="margin-bottom:44px">К вам приходят и небольшие застройщики, и лидеры рынка.
+      Пакеты сделаны так, чтобы вашему менеджеру было что предложить и тем, и другим — не проваливая
+      разговор в «это дорого» и не обесценивая крупные проекты.</p>
+
+    <div class="grid g2" style="gap:12px">
+      <article class="pack rv">
+        <span class="who">Для небольших застройщиков</span>
+        <h3>Витрина</h3>
+        <div class="price">от 350 000 ₽<small>срок 3–4 недели</small></div>
+        <ul>
+          <li>3D-сцена одного корпуса</li>
+          <li>6 экстерьерных ракурсов</li>
+          <li>День и вечер</li>
+          <li>Нарезка под сайт и соцсети</li>
+        </ul>
+      </article>
+
+      <article class="pack rv">
+        <span class="who">Базовый спрос</span>
+        <h3>Комплекс</h3>
+        <div class="price">от 840 000 ₽<small>срок 5–7 недель</small></div>
+        <ul>
+          <li>Сцена всего комплекса с территорией</li>
+          <li>12 ракурсов + аэропанорамы</li>
+          <li>Виды из окон по этажам</li>
+          <li>Ролик-облёт 30 секунд</li>
+        </ul>
+      </article>
+
+      <article class="pack hi rv">
+        <span class="who">Самый ходовой</span>
+        <h3>Интерактивная карта</h3>
+        <div class="price">от 1 650 000 ₽<small>срок 8–10 недель</small></div>
+        <ul>
+          <li>Всё из пакета «Комплекс»</li>
+          <li>3D-карта территории в браузере</li>
+          <li>Вращение, зум, выбор корпуса</li>
+          <li>Точки интереса и инфраструктура</li>
+          <li>Встраивание в сайт на вашей платформе</li>
+        </ul>
+      </article>
+
+      <article class="pack rv">
+        <span class="who">Для крупных девелоперов</span>
+        <h3>Выбор квартиры</h3>
+        <div class="price">от 3 110 000 ₽<small>срок 12–16 недель</small></div>
+        <ul>
+          <li>Всё из пакета «Карта»</li>
+          <li>Корпус → этаж → квартира</li>
+          <li>Синхронизация с CRM: статус, цена, бронь</li>
+          <li>Вид из окна конкретной квартиры</li>
+          <li>Заявка прямо с карты</li>
+        </ul>
+      </article>
+    </div>
+
+    <p class="mono rv" style="margin-top:20px">Цены — за комплекс до 4 корпусов.
+      Каждый следующий корпус +12%.</p>
+  </div>
+</section>
+
+<!-- ===================== МОДЕЛИ ОПЛАТЫ ===================== -->
+<section id="pay">
+  <div class="wrap">
+    <div class="shead"><span class="mono">Оплата</span><h2>Разом или подпиской</h2></div>
+    <p class="lead rv" style="margin-bottom:44px">Небольшой застройщик не вынет два миллиона из бюджета,
+      но спокойно платит помесячно. Подписка снимает этот барьер — клиент получает всё сразу,
+      а платит равномерно целый год.</p>
+
+    <div class="grid g2 rv">
+      <div class="pay">
+        <span class="tag">Модель 1</span>
+        <h3>Разовый проект</h3>
+        <p>Классика: 50% предоплата, 30% по готовности 3D, 20% при сдаче.
+           Подходит тем, у кого бюджет на маркетинг уже утверждён.</p>
+        <table>
+          <tr><td>Стоимость пакета «Карта»</td><td class="num">1 650 000 ₽</td></tr>
+          <tr><td>Предоплата 50%</td><td class="num">825 000 ₽</td></tr>
+          <tr><td>По готовности 3D, 30%</td><td class="num">495 000 ₽</td></tr>
+          <tr><td>При сдаче, 20%</td><td class="num">330 000 ₽</td></tr>
+          <tr><td>Поддержка «Стандарт», 12 мес</td><td class="num">238 800 ₽</td></tr>
+          <tr class="total"><td>Итого за первый год</td><td class="num">1 888 800 ₽</td></tr>
+        </table>
+      </div>
+
+      <div class="pay">
+        <span class="tag">Модель 2</span>
+        <h3>Подписка на 12 месяцев</h3>
+        <p>Клиент получает рендеры и карту сразу, а платит равными частями год.
+           Договор на 12 месяцев, работы запускаются по мере поступления платежей.</p>
+        <table>
+          <tr><td>Стартовый платёж</td><td class="num">330 000 ₽</td></tr>
+          <tr><td>Ежемесячно × 11: проект</td><td class="num">142 500 ₽</td></tr>
+          <tr><td>Ежемесячно × 11: поддержка</td><td class="num">19 900 ₽</td></tr>
+          <tr><td>Платёж в месяц</td><td class="num">162 400 ₽</td></tr>
+          <tr class="total"><td>Итого за первый год</td><td class="num">2 116 400 ₽</td></tr>
+        </table>
+        <p class="mono" style="margin-top:20px">При разовой оплате те же работы стоят 1 650 000 ₽ плюс поддержка
+          238 800 ₽ за год. Разница — плата за рассрочку. Срок подписки подстраиваем под даты вашего
+          контракта с застройщиком, чтобы продлевались вместе.</p>
+      </div>
+    </div>
+
+    <div class="rv" style="margin-top:44px;border:1px solid var(--line);padding:34px;background:var(--bg2)">
+      <h3 style="margin-bottom:14px">Что это даёт вам</h3>
+      <div class="grid g3" style="gap:28px">
+        <div><p><strong style="color:var(--fg)">Средний чек выше.</strong> 3D — это отдельный договор
+          поверх действующей подписки, а не скидка внутри неё. Клиент, отказавшийся от 3D по цене,
+          соглашается на помесячный платёж.</p></div>
+        <div><p><strong style="color:var(--fg)">Клиент крепче держится.</strong> Застройщик и так у вас
+          по контракту, но карта врастает в платформу и в вашу CRM: уйти к конкуренту — значит потерять её
+          или платить за перенос. Дополнительный договор поверх подписки делает уход дорогим.</p></div>
+        <div><p><strong style="color:var(--fg)">Вознаграждение партнёра.</strong> Обсуждаем: процент
+          с проекта или фиксированная ставка за приведённого клиента.</p></div>
+        <div><p><strong style="color:var(--fg)">Помогаем продавать.</strong> Готовим предложение для
+          застройщика вместе с вашим менеджером: состав работ, смета, примеры. Разбираться в 3D ему не нужно.</p></div>
+        <div><p><strong style="color:var(--fg)">Берём текущие проекты.</strong> Подключаемся к тому,
+          что уже в работе на платформе, — не ждём следующего клиента.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ===================== ПОДДЕРЖКА ===================== -->
+<section id="support">
+  <div class="wrap">
+    <div class="shead"><span class="mono">Поддержка</span><h2>Карта живёт — и требует ухода</h2></div>
+    <p class="lead rv" style="margin-bottom:44px">Интерактивная карта — не файл, который отдали и забыли.
+      Она работает на серверах, а данные по квартирам меняются каждую неделю. Поэтому вторым договором
+      идёт ежемесячная поддержка: она держит инфраструктуру и оплачивает руки, которые следят за проектом.</p>
+
+    <div class="grid g3">
+      <div class="pack rv">
+        <span class="who">Минимум</span>
+        <h3>Базовая</h3>
+        <div class="price">9 900 ₽<small>в месяц</small></div>
+        <ul>
+          <li>Хостинг, домен, сертификаты</li>
+          <li>Резервные копии</li>
+          <li>Мониторинг доступности</li>
+          <li>Реакция на сбои</li>
+        </ul>
+      </div>
+
+      <div class="pack hi rv">
+        <span class="who">Рекомендуем</span>
+        <h3>Стандарт</h3>
+        <div class="price">19 900 ₽<small>в месяц</small></div>
+        <ul>
+          <li>Всё из базовой</li>
+          <li>Обновление статусов и цен</li>
+          <li>Мелкие правки контента</li>
+          <li>2 часа работ в месяц</li>
+        </ul>
+      </div>
+
+      <div class="pack rv">
+        <span class="who">Для активных продаж</span>
+        <h3>Расширенная</h3>
+        <div class="price">44 900 ₽<small>в месяц</small></div>
+        <ul>
+          <li>Всё из стандарта</li>
+          <li>Новые корпуса и очереди</li>
+          <li>Сезонные виды, новые ракурсы</li>
+          <li>6 часов работ в месяц</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="rv" style="margin-top:44px;border:1px solid var(--line);padding:34px;background:var(--bg2)">
+      <h3 style="margin-bottom:14px">Почему это важно для партнёрства</h3>
+      <div class="grid g3" style="gap:28px">
+        <div><p>Поддержка — это регулярный платёж, который идёт рядом с вашей подпиской
+          на платформу и продлевается вместе с ней.</p></div>
+        <div><p>Партнёрское вознаграждение начисляется и с поддержки, а не только
+          с разового проекта.</p></div>
+        <div><p>Клиент, у которого карта обновляется, не уходит: у него на ней держатся продажи.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- ===================== КАК ВСТРАИВАЕТСЯ ===================== -->
+<section id="embed" class="light">
+  <div class="wrap">
+    <div class="shead"><span class="mono">Встраивание</span><h2>Как это выглядит у вас</h2></div>
+    <p class="lead rv" style="margin-bottom:44px">Мы отдаём готовый блок, который встаёт в вашу платформу
+      как любой другой. Никаких отдельных сайтов и внешних ссылок — карта живёт внутри сайта застройщика.</p>
+
+    <div class="rv" style="margin-bottom:20px">
+      <div class="ida">
+        <span class="tag">Naeza Media</span>
+        <div class="t">
+          <div>
+            <h4>3D-карта и выбор квартиры</h4>
+            <p>Интерактивная модель комплекса прямо на сайте: покупатель вращает территорию,
+               открывает корпус и выбирает квартиру. Статусы и цены подтягиваются из вашей CRM.</p>
+          </div>
+          <span class="b">Смотреть, как работает →</span>
+        </div>
+        <div class="v">
+          <video src="media/units-loop.mp4" autoplay muted loop playsinline
+                 poster="media/units-still.jpg"></video>
+        </div>
+      </div>
+    </div>
+    <div class="grid g2 rv" style="gap:20px;margin-bottom:36px">
+      <div class="idaside"><h4>Фиды</h4>
+        <p>Размещайте объявления на популярных платформах с помощью выгрузок.</p></div>
+      <div class="idaside"><h4>Маркетинг</h4>
+        <p>Подключайте коллтрекинг и системы аналитики.</p></div>
+    </div>
+    <p class="mono rv" style="margin-bottom:36px">Так наш блок встаёт в вашу страницу «Интеграции» —
+      в вашей вёрстке, рядом с вашими блоками.</p>
+
+    <div class="grid g3 rv" style="gap:12px">
+      <div class="card">
+        <h3 style="margin-bottom:12px">Блок в конструкторе</h3>
+        <p>Карта подключается как обычный блок платформы. Менеджер вставляет его без разработчика.</p>
+      </div>
+      <div class="card">
+        <h3 style="margin-bottom:12px">Данные из вашей CRM</h3>
+        <p>Статусы, цены и брони тянутся из системы, которая уже подключена к сайту. Второй базы не появляется.</p>
+      </div>
+      <div class="card">
+        <h3 style="margin-bottom:12px">Обновление без нас</h3>
+        <p>Продали квартиру — статус на карте меняется сам. Обращаться к нам ради этого не нужно.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== ПРОЦЕСС ===================== -->
+<section id="process">
+  <div class="wrap">
+    <div class="shead"><span class="mono">Процесс</span><h2>Как идёт работа</h2></div>
+    <div class="steps rv">
+      <div class="step"><div class="n">01</div><div>
+        <h3>Вы передаёте клиента</h3>
+        <p>Достаточно контакта и того, что известно: очередь, корпуса, сроки продаж. Дальше говорим сами.</p></div></div>
+      <div class="step"><div class="n">02</div><div>
+        <h3>Считаем и показываем вилку</h3>
+        <p>За два дня отдаём пакет, срок и цену. Вы видите смету до того, как обещать что-то клиенту.</p></div></div>
+      <div class="step"><div class="n">03</div><div>
+        <h3>Собираем 3D-сцену</h3>
+        <p>Работаем от исходников проектировщика. Промежуточные показы, чтобы правки шли по ходу, а не в конце.</p></div></div>
+      <div class="step"><div class="n">04</div><div>
+        <h3>Отдаём рендеры</h3>
+        <p>Клиент уже может запускать рекламу, пока карта в работе.</p></div></div>
+      <div class="step"><div class="n">05</div><div>
+        <h3>Собираем и встраиваем карту</h3>
+        <p>Подключаем данные, ставим блок на сайт, проверяем на телефонах.</p></div></div>
+      <div class="step"><div class="n">06</div><div>
+        <h3>Ведём весь срок</h3>
+        <p>Новые корпуса, смена планировок, сезонные виды — по подписке или отдельными работами.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== КОНТАКТЫ ===================== -->
+<section id="contacts">
+  <div class="wrap">
+    <div class="shead"><span class="mono">Дальше</span><h2>Готовы начинать</h2></div>
+    <div class="arg">
+      <div class="rv">
+        <p class="lead" style="margin-bottom:44px">Мы готовы к партнёрскому соглашению сейчас — и берём
+          не только новых клиентов, но и проекты, которые у вас уже в работе. Подключаемся на любой стадии:
+          если по проекту нужно предложение для застройщика, готовим его вместе с вами — концепция,
+          состав работ, смета и визуальные материалы под вашего клиента.</p>
+        <div class="cta" style="display:flex;gap:16px;flex-wrap:wrap">
+          <a href="#" class="btn primary">Позвонить</a>
+          <a href="#" class="btn ghost">Написать в Telegram</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="fgrid">
+      <div>
+        <div class="cobrand" style="font-size:21px;margin-bottom:16px"><span class="u"><img src="img/naeza-mark.svg" alt="" style="height:30px"><span>Naeza Media</span></span><span class="x">×</span><span class="u"><img src="img/ida-mark.svg" alt="" style="height:30px"><span class="p2">Ида.Лайт</span></span></div>
+        <p>Производство мультимедиа-контента с 2023 года: 3D-сцены и рендеры,
+           интерактивные карты и макеты, видеомэппинг, музейные экспозиции.</p>
+      </div>
+      <div>
+        <div class="mono" style="margin-bottom:16px">Разделы</div>
+        <p><a href="#levels">Что делаем</a><br><a href="#catalog">Каталог</a><br>
+           <a href="#pay">Оплата</a><br><a href="#support">Поддержка</a>
+      <a href="#embed">Встраивание</a></p>
+      </div>
+      <div>
+        <div class="mono" style="margin-bottom:16px">Связь</div>
+        <p>Иван Надёжин<br>
+           <a href="tel:+79308197646">+7 930 819-76-46</a><br>
+           <a href="https://t.me/fillius_fortunae" target="_blank" rel="noopener">t.me/fillius_fortunae</a><br>
+           <a href="mailto:ivannad11@yandex.ru">ivannad11@yandex.ru</a><br>
+           <a href="https://naezamedia.ru/?utm_source=kp&amp;utm_medium=partner&amp;utm_campaign=idalite" target="_blank" rel="noopener">naezamedia.ru</a></p>
+      </div>
+    </div>
+    <div class="fnote">
+      <span>Партнёрское предложение · Naeza Media × Ида.Лайт · 2026</span>
+      <a href="https://naezamedia.ru/?utm_source=kp&amp;utm_medium=partner&amp;utm_campaign=idalite" target="_blank" rel="noopener">naezamedia.ru</a>
+    </div>
+  </div>
+</footer>
+
+<div id="lb"><span class="close">закрыть · Esc</span><video id="lbv" controls loop playsinline></video></div>
+
+<script>
+// класс ставим из скрипта: если JS отключён, .rv остаётся видимым
+document.documentElement.classList.add('js');
+
+// раскрытие видео по клику
+const lb=document.getElementById('lb'), lbv=document.getElementById('lbv');
+document.querySelectorAll('.media.has-video').forEach(m=>{
+  m.addEventListener('click', ()=>{
+    const src=m.querySelector('video').getAttribute('src');
+    lbv.setAttribute('src', src); lb.classList.add('on'); lbv.currentTime=0; lbv.play();
+    document.body.style.overflow='hidden';
+  });
+});
+const closeLb=()=>{ lb.classList.remove('on'); lbv.pause(); lbv.removeAttribute('src');
+  document.body.style.overflow=''; };
+lb.addEventListener('click', e=>{ if(e.target!==lbv) closeLb(); });
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeLb(); });
+if('IntersectionObserver' in window){
+  const io=new IntersectionObserver((es)=>{es.forEach((e,i)=>{if(e.isIntersecting){
+    setTimeout(()=>e.target.classList.add('in'),i*60);io.unobserve(e.target)}})},{threshold:.12});
+  document.querySelectorAll('.rv').forEach(el=>io.observe(el));
+}else{
+  document.querySelectorAll('.rv').forEach(el=>el.classList.add('in'));
+}
+</script>
+</body>
+</html>
