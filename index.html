@@ -189,6 +189,13 @@ tr.total td{font-weight:500;color:var(--fg);border-top:1px solid var(--acc);bord
 .pay{border:1px solid var(--line);padding:28px;background:var(--bg2)}
 .pay h3{margin-bottom:20px}
 .pay .tag{font:var(--mono4);color:var(--acc);display:block;margin-bottom:14px}
+/* «что это даёт» — пять коротких тезисов, им хватает двух колонок и мелкого кегля */
+.gives{border:1px solid var(--line);padding:26px 28px;background:var(--bg2)}
+.gives h3{margin-bottom:16px}
+/* колонки, а не сетка: тезисы разной длины текут плотно, без дыр между строками */
+.gives .cols{column-count:2;column-gap:34px}
+.gives .cols>div{break-inside:avoid;margin-bottom:14px}
+.gives p{font-size:14.5px;line-height:1.5}
 
 /* ---------- как встраивается (светлый блок) ---------- */
 .light{background:oklch(0.97 0.003 250);color:oklch(0.22 0.01 260)}
@@ -278,6 +285,23 @@ html.js .rv.in{opacity:1;transform:none}
   /* таблицы должны читаться без горизонтального скролла */
   th,td{padding:11px 0;font-size:14px}
   .pack,.pay,.light .card,.idaside{padding:22px}
+  /* модели оплаты остаются рядом и на телефоне — их сравнивают друг с другом */
+  .paygrid{grid-template-columns:repeat(2,1fr);gap:12px}
+  .paygrid .pay{padding:16px 14px}
+  .paygrid .pay h3{font-size:17px;margin-bottom:14px}
+  .paygrid .pay p{font-size:13px;line-height:1.45}
+  .paygrid .pay .tag{margin-bottom:10px}
+  /* в узкой колонке сумма встаёт под названием строки, а не рядом с ним */
+  .paygrid table{width:100%}
+  .paygrid td{display:block;width:auto;padding:7px 0 0;font-size:12.5px;line-height:1.35}
+  .paygrid td.num{padding:1px 0 7px;font-size:14px;text-align:left}
+  .paygrid tr{display:block;border-bottom:1px solid var(--line)}
+  .paygrid tr:last-child{border-bottom:0}
+  /* моноширинная сноска в узкой колонке разъезжается на десяток строк */
+  .paygrid p.mono{font:400 11.5px/1.45 'Golos Text',system-ui,sans-serif;
+    text-transform:none;letter-spacing:0;margin-top:14px!important}
+  .gives{padding:20px}
+  .gives .cols{column-count:1}
   .level .body{padding:20px}
   .price{font-size:26px}
   .arg{gap:28px}
@@ -614,7 +638,7 @@ html.js .rv.in{opacity:1;transform:none}
       но спокойно платит помесячно. Подписка снимает этот барьер — клиент получает всё сразу,
       а платит равномерно целый год.</p>
 
-    <div class="grid g2 rv">
+    <div class="grid g2 paygrid rv">
       <div class="pay">
         <span class="tag">Модель 1</span>
         <h3>Разовый проект</h3>
@@ -648,9 +672,9 @@ html.js .rv.in{opacity:1;transform:none}
       </div>
     </div>
 
-    <div class="rv" style="margin-top:44px;border:1px solid var(--line);padding:34px;background:var(--bg2)">
-      <h3 style="margin-bottom:14px">Что это даёт вам</h3>
-      <div class="grid g3" style="gap:28px">
+    <div class="gives rv" style="margin-top:44px">
+      <h3>Что это даёт вам</h3>
+      <div class="cols">
         <div><p><strong style="color:var(--fg)">Средний чек выше.</strong> 3D — это отдельный договор
           поверх действующей подписки, а не скидка внутри неё. Клиент, отказавшийся от 3D по цене,
           соглашается на помесячный платёж.</p></div>
