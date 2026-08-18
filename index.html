@@ -190,6 +190,8 @@ tr.total td{font-weight:500;color:var(--fg);border-top:1px solid var(--acc);bord
 .pay h3{margin-bottom:20px}
 .pay .tag{font:var(--mono4);color:var(--acc);display:block;margin-bottom:14px}
 /* «что это даёт» — пять коротких тезисов, им хватает двух колонок и мелкого кегля */
+.payhint{display:none;align-items:center;gap:10px;margin-top:2px}
+.payhint .line{height:1px;background:var(--line);flex:1}
 .gives{border:1px solid var(--line);padding:26px 28px;background:var(--bg2)}
 .gives h3{margin-bottom:16px}
 /* колонки, а не сетка: тезисы разной длины текут плотно, без дыр между строками */
@@ -285,12 +287,22 @@ html.js .rv.in{opacity:1;transform:none}
   /* таблицы должны читаться без горизонтального скролла */
   th,td{padding:11px 0;font-size:14px}
   .pack,.pay,.light .card,.idaside{padding:22px}
-  /* модели оплаты остаются рядом и на телефоне — их сравнивают друг с другом */
-  .paygrid{grid-template-columns:repeat(2,1fr);gap:12px}
-  .paygrid .pay{padding:16px 14px}
-  .paygrid .pay h3{font-size:17px;margin-bottom:14px}
-  .paygrid .pay p{font-size:13px;line-height:1.45}
+  /* две колонки на телефоне слишком узкие — модели едут лентой, как галерея.
+     Вторая карточка выглядывает за краем: сразу видно, что можно листать */
+  .paygrid{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:12px;
+    grid-template-columns:none;
+    width:100vw;margin-left:calc(50% - 50vw);
+    padding:0 var(--pad) 14px;
+    scrollbar-width:thin;scrollbar-color:var(--line) transparent}
+  .paygrid::-webkit-scrollbar{height:6px}
+  .paygrid::-webkit-scrollbar-track{background:transparent}
+  .paygrid::-webkit-scrollbar-thumb{background:var(--line);border-radius:3px}
+  .paygrid .pay{flex:0 0 auto;width:min(78vw,380px);scroll-snap-align:start;padding:20px 18px}
+  .paygrid .pay h3{font-size:18px;margin-bottom:16px}
+  .paygrid .pay p{font-size:13.5px;line-height:1.5}
   .paygrid .pay .tag{margin-bottom:10px}
+  .payhint{display:flex}
+  .payhint .line{height:1px;background:var(--line);flex:1}
   /* в узкой колонке сумма встаёт под названием строки, а не рядом с ним */
   .paygrid table{width:100%}
   .paygrid td{display:block;width:auto;padding:7px 0 0;font-size:12.5px;line-height:1.35}
@@ -671,6 +683,7 @@ html.js .rv.in{opacity:1;transform:none}
           контракта с застройщиком, чтобы продлевались вместе.</p>
       </div>
     </div>
+    <div class="payhint"><span class="mono">Листайте вбок — две модели рядом</span><span class="line"></span></div>
 
     <div class="gives rv" style="margin-top:44px">
       <h3>Что это даёт вам</h3>
