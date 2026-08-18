@@ -97,6 +97,14 @@
   transition:opacity .28s ease, transform .28s ease, visibility 0s .28s}
 /* while hidden the card must not sit on top of the scene swallowing touches */
 .card.on{opacity:1; transform:none; visibility:visible; pointer-events:auto; transition-delay:0s}
+.card .x{position:absolute; right:8px; top:8px; width:30px; height:30px; padding:0;
+  display:flex; align-items:center; justify-content:center; cursor:pointer;
+  background:transparent; border:1px solid var(--line); border-radius:50%;
+  transition:border-color .16s, background-color .16s}
+.card .x svg{width:13px; height:13px; stroke:var(--fg-dim); stroke-width:2; fill:none; stroke-linecap:round}
+.card .x:hover{border-color:var(--amber)}
+.card .x:hover svg{stroke:var(--amber)}
+.card .x:focus-visible{outline:2px solid var(--amber); outline-offset:2px}
 .card h2{font-family:'Alumni Sans',system-ui,sans-serif; font-weight:700; font-size:33px;
   line-height:.88; margin:5px 0 10px; text-transform:uppercase}
 .rows{display:flex; flex-direction:column; gap:0; margin-bottom:12px}
@@ -167,8 +175,22 @@
   .badge h1{font-size:19px}
   .badge .sub{display:none}
   .bottom{flex-direction:column; align-items:stretch; padding:12px}
-  .card{width:auto}
-  .tools{align-items:stretch}
+  .tools{align-items:stretch; transition:opacity .22s ease, transform .22s ease}
+
+  /* the card becomes a bottom sheet: slides up from the edge, stays compact */
+  .card{position:absolute; left:0; right:0; bottom:0; width:auto;
+    border-left:0; border-right:0; border-bottom:0; border-radius:4px 4px 0 0;
+    padding:13px 14px calc(13px + env(safe-area-inset-bottom, 0px));
+    transform:translateY(101%);
+    transition:transform .3s cubic-bezier(.22,.7,.3,1), opacity .2s ease, visibility 0s .3s}
+  .card.on{transform:translateY(0); transition-delay:0s}
+  .card h2{font-size:26px; margin:3px 0 8px}
+  .card .row{padding:5px 0; font-size:12px}
+  .card .rows{margin-bottom:10px}
+  .card .legend{gap:8px; margin-bottom:10px; font-size:10px}
+  .card .x{width:34px; height:34px; right:10px; top:10px}
+  /* while the sheet is up the controls step aside instead of hiding under it */
+  .wrap.picked .tools{opacity:0; pointer-events:none; transform:translateY(10px)}
   .hint{max-width:none; text-align:center; padding:6px 10px;
     display:flex; flex-wrap:wrap; justify-content:center; gap:2px 10px}
   .hint br{display:none}
@@ -220,6 +242,9 @@
 
   <div class="bottom">
     <div class="card" id="card">
+      <button class="x" id="cClose" type="button" aria-label="Закрыть карточку">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
       <div class="mono" id="cLabel">Корпус</div>
       <h2 id="cName">—</h2>
       <div class="rows">
@@ -1108,6 +1133,7 @@ function handleClick(e){
 }
 function select(id){
   selectedId = id;
+  surface.classList.toggle('picked', !!id);
   if(!id){ card.classList.remove('on'); return; }
   const B = BUILDINGS.find(b=>b.id===id);
   if(!B) return;
@@ -1131,6 +1157,27 @@ function select(id){
   cam.distT = clamp(cam.dist*0.80, fitDistance()*0.55, fitDistance()*0.95);
   orbiting = false; syncOrbitBtn();
 }
+el('cClose').addEventListener('click', ()=>{ select(0); });
+
+// swipe the sheet down to dismiss it — the gesture people already expect
+(function(){
+  let y0 = null, dy = 0;
+  card.addEventListener('touchstart', e=>{
+    if(e.touches.length !== 1) { y0 = null; return; }
+    y0 = e.touches[0].clientY; dy = 0;
+  }, {passive:true});
+  card.addEventListener('touchmove', e=>{
+    if(y0 === null || !e.touches.length) return;
+    dy = e.touches[0].clientY - y0;
+    if(dy > 0) card.style.transform = 'translateY(' + dy.toFixed(0) + 'px)';
+  }, {passive:true});
+  card.addEventListener('touchend', ()=>{
+    if(y0 === null) return;
+    card.style.transform = '';
+    if(dy > 46) select(0);
+    y0 = null; dy = 0;
+  }, {passive:true});
+})();
 el('cCta').addEventListener('click', ()=>{
   const b = el('cCta');
   b.textContent = 'Заявка уходит в CRM →';
