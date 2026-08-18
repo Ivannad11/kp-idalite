@@ -124,6 +124,26 @@
 .btn.on{border-color:var(--amber); color:var(--amber)}
 .btn:focus-visible, .cta:focus-visible{outline:2px solid var(--amber); outline-offset:2px}
 
+/* ---- clickable pins floating over each block ---- */
+.pins{position:absolute; inset:0; pointer-events:none; z-index:4}
+.pin{position:absolute; left:0; top:0; pointer-events:auto; cursor:pointer;
+  display:flex; align-items:center; gap:6px; padding:5px 9px 5px 6px;
+  background:var(--panel); backdrop-filter:blur(10px);
+  border:1px solid var(--line); border-radius:100px;
+  font-family:'Martian Mono',ui-monospace,monospace; font-size:9.5px; letter-spacing:.04em;
+  text-transform:uppercase; color:var(--fg); white-space:nowrap;
+  transform:translate(-50%,-50%); transition:border-color .16s, color .16s, opacity .2s}
+.pin:hover, .pin.on{border-color:var(--amber); color:var(--amber)}
+.pin i{width:8px; height:8px; border-radius:50%; background:var(--amber); flex:none; position:relative}
+.pin i::after{content:''; position:absolute; inset:-4px; border-radius:50%;
+  border:1px solid var(--amber); opacity:0}
+.pins.idle .pin i::after{animation:ping 2.1s ease-out infinite}
+@keyframes ping{0%{transform:scale(.6); opacity:.85} 70%{transform:scale(1.9); opacity:0} 100%{opacity:0}}
+.pin.hidden{opacity:0; pointer-events:none}
+.pin:focus-visible{outline:2px solid var(--amber); outline-offset:2px}
+@media (prefers-reduced-motion:reduce){ .pins.idle .pin i::after{animation:none; opacity:.5} }
+@media (max-width:720px){ .pin{font-size:8.5px; padding:4px 7px 4px 5px} }
+
 .loader{position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
   background:var(--ink); z-index:10; transition:opacity .5s ease}
 .loader.off{opacity:0; pointer-events:none}
@@ -153,6 +173,7 @@
 
 <div class="wrap">
   <canvas id="gl"></canvas>
+  <div class="pins idle" id="pins"></div>
 
   <div class="loader" id="loader"><div class="l">Сборка сцены</div></div>
   <div class="fallback" id="fallback">
@@ -192,7 +213,7 @@
     </div>
 
     <div class="tools">
-      <div class="hint mono">Тяните — вращение<br>Колесо — приближение<br>Клик по корпусу — данные</div>
+      <div class="hint mono">Здесь всё нажимается<br>Кнопки ниже — рабочие<br>Тяните — вращение · колесо — зум</div>
       <div class="btns">
         <button class="btn" id="bTime">Вечер</button>
         <button class="btn" id="bOrbit">Облёт</button>
@@ -416,10 +437,10 @@ function makeFacade(night){
   if(night){ g.fillStyle = '#000000'; g.fillRect(0,0,S,S); }
   else {
     // concrete base with subtle vertical banding
-    g.fillStyle = '#A7A9A6'; g.fillRect(0,0,S,S);
+    g.fillStyle = '#93938E'; g.fillRect(0,0,S,S);
     for(let i=0;i<2600;i++){
       const x=Math.random()*S, y=Math.random()*S;
-      g.fillStyle = 'rgba(0,0,0,'+(Math.random()*0.045)+')';
+      g.fillStyle = 'rgba(0,0,0,'+(Math.random()*0.06)+')';
       g.fillRect(x,y,Math.random()*7+1,Math.random()*2+1);
     }
   }
@@ -447,12 +468,12 @@ function makeFacade(night){
           g.fillRect(x+cw*0.06, y+ch*0.74, cw*0.88, ch*0.12);
         }
       } else {
-        // glass
+        // glass — darker and bluer so windows read as openings, not grey patches
         const grd = g.createLinearGradient(wx, wy, wx+ww, wy+wh);
-        grd.addColorStop(0, '#5E7382'); grd.addColorStop(0.55, '#8FA6B3'); grd.addColorStop(1, '#4C5F6C');
+        grd.addColorStop(0, '#2C3E4C'); grd.addColorStop(0.5, '#4E6A7B'); grd.addColorStop(1, '#22313C');
         g.fillStyle = grd; g.fillRect(wx, wy, ww, wh);
         // frame
-        g.strokeStyle = '#DAD9D4'; g.lineWidth = Math.max(2, cw*0.028);
+        g.strokeStyle = '#D2D1CB'; g.lineWidth = Math.max(2, cw*0.028);
         g.strokeRect(wx, wy, ww, wh);
         // mullion
         g.beginPath(); g.moveTo(wx+ww*0.5, wy); g.lineTo(wx+ww*0.5, wy+wh); g.stroke();
@@ -591,40 +612,56 @@ void main(){
     rough = 0.16;
   } else if(type == 1){                           // concrete / roof
     float g = noise(vW.xz*0.7)*0.10 + noise(vW.xz*3.1)*0.05;
-    albedo = vec3(0.60,0.60,0.585) + g - 0.06;
+    albedo = vec3(0.52,0.515,0.495) + g - 0.06;
     rough = 0.92;
   } else if(type == 3){                           // lawn / terrain
     float g = noise(vW.xz*0.32)*0.5 + noise(vW.xz*1.7)*0.28 + noise(vW.xz*7.0)*0.12;
-    albedo = mix(vec3(0.24,0.31,0.19), vec3(0.36,0.43,0.25), g);
+    albedo = mix(vec3(0.135,0.185,0.095), vec3(0.245,0.305,0.145), g);
+    albedo += vec3(0.03,0.02,0.0)*noise(vW.xz*0.11);   // dry patches, not billiard cloth
     rough = 1.0;
   } else if(type == 4){                           // paving
     vec2 t = floor(vW.xz*0.85);
-    float v = hash(t)*0.09;
-    albedo = vec3(0.63,0.62,0.60) + v - 0.045;
+    float v = hash(t)*0.10;
+    albedo = vec3(0.52,0.505,0.478) + v - 0.05;
     float line = step(0.94, fract(vW.x*0.85)) + step(0.94, fract(vW.z*0.85));
-    albedo -= line*0.05;
+    albedo -= line*0.06;
     rough = 0.94;
   } else if(type == 5){                           // asphalt
-    float g = noise(vW.xz*4.0)*0.06;
-    albedo = vec3(0.20,0.205,0.215) + g;
+    float g = noise(vW.xz*4.0)*0.05;
+    albedo = vec3(0.135,0.140,0.152) + g;
     rough = 0.97;
   } else if(type == 6){                           // playground rubber
-    albedo = mix(vec3(0.55,0.28,0.20), vec3(0.42,0.34,0.24), noise(vW.xz*1.4));
+    albedo = mix(vec3(0.50,0.22,0.15), vec3(0.38,0.29,0.18), noise(vW.xz*1.4));
     rough = 0.98;
   } else if(type == 7){                           // foliage
     float g = noise(vW.xz*2.6 + vW.y);
-    albedo = mix(vec3(0.16,0.28,0.13), vec3(0.29,0.42,0.18), g);
+    albedo = mix(vec3(0.10,0.21,0.075), vec3(0.25,0.40,0.13), g);
     rough = 1.0;
   } else {                                        // trunk
-    albedo = vec3(0.24,0.19,0.14);
+    albedo = vec3(0.19,0.145,0.10);
     rough = 1.0;
   }
 
-  // selection / hover tint on buildings
+  // each block gets its own concrete tint so four towers don't read as one clone
   float bid = vA.y;
+  if(bid > 0.5 && type != 2){
+    vec3 tint = vec3(1.0);
+    if(bid < 1.5)      tint = vec3(1.03, 1.00, 0.95);
+    else if(bid < 2.5) tint = vec3(0.95, 0.97, 1.02);
+    else if(bid < 3.5) tint = vec3(1.02, 0.99, 0.93);
+    else               tint = vec3(0.93, 0.95, 0.99);
+    albedo *= tint;
+  }
+
+  // cheap ambient occlusion: darken where volumes meet the ground and each other
+  float aoGround = smoothstep(0.0, 9.0, vW.y)*0.34 + 0.66;
+  if(type == 3 || type == 4 || type == 5 || type == 6) aoGround = 1.0;
+  albedo *= aoGround;
+
+  // selection / hover tint on buildings
   if(bid > 0.5){
-    if(abs(bid - uSelected) < 0.1) albedo = mix(albedo, vec3(1.0,0.72,0.28), 0.30);
-    else if(abs(bid - uHover) < 0.1) albedo = mix(albedo, vec3(1.0,0.85,0.55), 0.14);
+    if(abs(bid - uSelected) < 0.1) albedo = mix(albedo, vec3(1.0,0.70,0.26), 0.34);
+    else if(abs(bid - uHover) < 0.1) albedo = mix(albedo, vec3(1.0,0.84,0.52), 0.16);
   }
 
   vec3 L = normalize(uSunDir);
@@ -643,17 +680,26 @@ void main(){
   // fresnel rim keeps glass reading as glass
   float fres = pow(1.0 - max(dot(N,V),0.0), 4.0) * (1.0 - rough) * 0.7;
 
-  vec3 col = albedo * (amb + uSunCol * ndl * shd)
+  // ground bounce: warm light kicked back up onto the undersides
+  vec3 bounce = uSunCol * 0.13 * max(-N.y, 0.0) * vec3(1.0,0.92,0.74);
+
+  vec3 col = albedo * (amb + uSunCol * ndl * shd + bounce)
            + uSunCol * spec * shd
            + uSkyCol * fres
            + emis;
 
-  // distance fog
+  // distance fog — only bites on the far half so the estate itself stays crisp
   float dist = length(uCam - vW);
-  float fog = 1.0 - exp(-pow(dist*0.0021, 3.0));
-  col = mix(col, uFogCol, clamp(fog, 0.0, 0.55));
+  float fog = 1.0 - exp(-pow(max(dist-170.0, 0.0)*0.0021, 2.2));
+  col = mix(col, uFogCol, clamp(fog, 0.0, 0.86));
 
-  frag = vec4(pow(aces(col), vec3(1.0/2.2)), 1.0);
+  col = aces(col);
+  // pull a little saturation and contrast back after tonemapping
+  float lum = dot(col, vec3(0.2126, 0.7152, 0.0722));
+  col = mix(vec3(lum), col, 1.18);
+  col = clamp((col - 0.5) * 1.09 + 0.5, 0.0, 1.0);
+
+  frag = vec4(pow(col, vec3(1.0/2.2)), 1.0);
 }`;
 
 const V_DEPTH = `#version 300 es
@@ -843,7 +889,7 @@ let dragging=false, lastX=0, lastY=0, pointers=new Map(), pinchStart=0, distStar
 canvas.addEventListener('pointerdown', e=>{
   canvas.setPointerCapture(e.pointerId);
   pointers.set(e.pointerId, {x:e.clientX, y:e.clientY});
-  if(pointers.size===1){ dragging=true; lastX=e.clientX; lastY=e.clientY; moved=0; canvas.classList.add('dragging'); orbiting=false; syncOrbitBtn(); }
+  if(pointers.size===1){ dragging=true; lastX=e.clientX; lastY=e.clientY; moved=0; canvas.classList.add('dragging'); orbiting=false; syncOrbitBtn(); touched(); }
   else if(pointers.size===2){
     const p=[...pointers.values()];
     pinchStart=Math.hypot(p[0].x-p[1].x, p[0].y-p[1].y);
@@ -889,7 +935,7 @@ canvas.addEventListener('wheel', e=>{
   else if(e.deltaMode === 2) d *= 100;  // pages
   const step = clamp(d * 0.0013, -0.16, 0.16);
   cam.distT = clamp(cam.distT * Math.exp(step), 46, 300);
-  orbiting=false; syncOrbitBtn();
+  orbiting=false; syncOrbitBtn(); touched();
 }, {passive:false});
 
 /* ---- raycast picking against building AABBs ---- */
@@ -988,6 +1034,38 @@ el('cCta').addEventListener('click', ()=>{
   setTimeout(()=>{ b.textContent = 'Выбрать квартиру'; }, 1900);
 });
 
+/* ---- pins: DOM labels tracking each block's roof in screen space ---- */
+const pinsBox = document.getElementById('pins');
+const pins = BUILDINGS.map(B=>{
+  const top = Math.max.apply(null, B.steps.map(s=> s[2]))*FLOOR_H + 4.4 + 9;
+  const node = document.createElement('button');
+  node.className = 'pin';
+  node.type = 'button';
+  node.innerHTML = '<i></i>' + B.name;
+  node.setAttribute('aria-label', 'Показать данные: ' + B.name);
+  node.addEventListener('click', ev=>{ ev.stopPropagation(); touched(); select(B.id); });
+  pinsBox.appendChild(node);
+  return {id:B.id, node:node, at:[B.x, top, B.z]};
+});
+function touched(){ pinsBox.classList.remove('idle'); }
+
+function placePins(VP){
+  const r = canvas.getBoundingClientRect();
+  for(const p of pins){
+    const x=p.at[0], y=p.at[1], z=p.at[2];
+    const cx = VP[0]*x + VP[4]*y + VP[8]*z  + VP[12];
+    const cy = VP[1]*x + VP[5]*y + VP[9]*z  + VP[13];
+    const cw = VP[3]*x + VP[7]*y + VP[11]*z + VP[15];
+    if(cw <= 0.001){ p.node.classList.add('hidden'); continue; }
+    const sx = (cx/cw*0.5 + 0.5) * r.width;
+    const sy = (0.5 - cy/cw*0.5) * r.height;
+    const off = sx < -60 || sy < -40 || sx > r.width+60 || sy > r.height+40;
+    p.node.classList.toggle('hidden', off);
+    if(!off) p.node.style.transform = 'translate(-50%,-50%) translate(' + sx.toFixed(1) + 'px,' + sy.toFixed(1) + 'px)';
+    p.node.classList.toggle('on', p.id === selectedId);
+  }
+}
+
 let night = 0, nightTarget = 0;
 const bTime = el('bTime'), bOrbit = el('bOrbit');
 bTime.addEventListener('click', ()=>{
@@ -1021,14 +1099,15 @@ el('mDraws').textContent = '5';
 let frames=0, fpsTime=performance.now(), fps=0;
 let started = 0, shown = false;
 
-// sun/moon vectors point FROM the surface TOWARD the light
+// sun/moon vectors point FROM the surface TOWARD the light.
+// Warm direct light against cool sky ambient is what stops the scene reading as washed out.
 const DAY = {
-  sun:[-0.48,0.66,-0.58], sunCol:[1.16,1.05,0.86], sky:[0.16,0.21,0.30],
-  ground:[0.11,0.10,0.085], top:[0.26,0.44,0.72], hor:[0.63,0.73,0.82], fog:[0.66,0.74,0.82]
+  sun:[-0.52,0.56,-0.65], sunCol:[1.40,1.20,0.90], sky:[0.145,0.180,0.255],
+  ground:[0.095,0.090,0.072], top:[0.20,0.40,0.72], hor:[0.60,0.72,0.84], fog:[0.62,0.72,0.84]
 };
 const NIGHT = {
-  sun:[-0.38,0.58,-0.72], sunCol:[0.11,0.15,0.26], sky:[0.09,0.12,0.20],
-  ground:[0.035,0.035,0.045], top:[0.025,0.04,0.09], hor:[0.14,0.13,0.17], fog:[0.10,0.11,0.15]
+  sun:[-0.40,0.46,-0.79], sunCol:[0.13,0.17,0.30], sky:[0.055,0.075,0.145],
+  ground:[0.022,0.022,0.032], top:[0.018,0.03,0.075], hor:[0.11,0.10,0.15], fog:[0.075,0.085,0.125]
 };
 function mixArr(a,b,t){ return [lerp(a[0],b[0],t), lerp(a[1],b[1],t), lerp(a[2],b[2],t)]; }
 
@@ -1061,6 +1140,7 @@ function frame(now){
   const proj = M4.persp(Math.PI/4.6, W/H, 1.2, 900);
   const VP = M4.mul(proj, view);
   invVP = invert(VP);
+  placePins(VP);
 
   // light matrix — camera sits along the sun vector, looking back at the scene
   const R = 180, sl = Math.hypot(sunDir[0], sunDir[1], sunDir[2]) || 1;
