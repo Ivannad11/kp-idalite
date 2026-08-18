@@ -157,16 +157,37 @@
 .fallback p{max-width:380px; line-height:1.6; color:var(--fg-dim); font-size:14px}
 
 @media (max-width:720px){
-  .metrics{grid-template-columns:repeat(3,auto); gap:2px 13px; padding:8px 11px}
-  .metrics .v{font-size:19px}
-  .badge h1{font-size:22px}
-  .badge .sub{font-size:10px}
-  .bottom{flex-direction:column; align-items:stretch}
+  .top{padding:11px 12px; gap:8px}
+  .metrics{gap:1px 10px; padding:7px 9px}
+  .metrics .v{font-size:17px}
+  .metrics .mono{font-size:8px; letter-spacing:.03em}
+  .badge{padding:7px 10px 8px}
+  .badge h1{font-size:19px}
+  .badge .sub{display:none}
+  .bottom{flex-direction:column; align-items:stretch; padding:12px}
   .card{width:auto}
   .tools{align-items:stretch}
-  .hint{display:none}
+  .hint{max-width:none; text-align:center; padding:6px 10px;
+    display:flex; flex-wrap:wrap; justify-content:center; gap:2px 10px}
+  .hint br{display:none}
+  .hint span{white-space:nowrap}
+  .hint span + span::before{content:'· '; color:var(--fg-mute)}
   .btns{justify-content:stretch}
   .btn{flex:1}
+}
+/* narrow screens: the metric block collapses to one compact row of figures */
+@media (max-width:560px){
+  .top{align-items:center}
+  .badge{flex:0 1 auto; min-width:0}
+  .metrics{flex:none; display:flex; align-items:baseline; gap:8px; padding:6px 9px}
+  .metrics .m{flex-direction:row; align-items:baseline; gap:3px}
+  .metrics .m .mono{display:none}
+  .metrics .m::after{font-family:'Martian Mono',ui-monospace,monospace; font-size:8px;
+    color:var(--fg-mute); letter-spacing:.03em}
+  .metrics .m:nth-child(1)::after{content:'FPS'}
+  .metrics .m:nth-child(2)::after{content:'ПОЛИГ'}
+  .metrics .m:nth-child(3){display:none}   /* no room for draw calls next to the title */
+  .metrics .v{font-size:15px}
 }
 @media (prefers-reduced-motion:reduce){
   .card{transition:none}
@@ -215,7 +236,7 @@
     </div>
 
     <div class="tools">
-      <div class="hint mono">Здесь всё нажимается<br>Кнопки ниже — рабочие<br>Тяните — вращение · колесо — зум</div>
+      <div class="hint mono"><span>Здесь всё нажимается</span><br><span>Кнопки ниже — рабочие</span><br><span>Тяните — вращение · колесо — зум</span></div>
       <div class="btns">
         <button class="btn" id="bTime">Вечер</button>
         <button class="btn" id="bOrbit">Облёт</button>
@@ -908,7 +929,7 @@ canvas.addEventListener('pointermove', e=>{
   if(pointers.size===2){
     const p=[...pointers.values()];
     const d=Math.hypot(p[0].x-p[1].x, p[0].y-p[1].y);
-    if(pinchStart>0) cam.distT = clamp(distStart * (pinchStart/Math.max(d,1)), 46, 300);
+    if(pinchStart>0) cam.distT = clamp(distStart * (pinchStart/Math.max(d,1)), 46, fitDistance()*1.6);
     return;
   }
   if(dragging){
@@ -960,7 +981,7 @@ canvas.addEventListener('touchmove', e=>{
   if(e.touches.length===2){
     const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,
                        e.touches[0].clientY-e.touches[1].clientY);
-    if(tPinch>0) cam.distT = clamp(tDistStart*(tPinch/Math.max(d,1)), 46, 300);
+    if(tPinch>0) cam.distT = clamp(tDistStart*(tPinch/Math.max(d,1)), 46, fitDistance()*1.6);
   } else if(dragging && e.touches.length===1){
     const x=e.touches[0].clientX, y=e.touches[0].clientY;
     const dx=x-tLastX, dy=y-tLastY;
@@ -986,7 +1007,7 @@ canvas.addEventListener('wheel', e=>{
   if(e.deltaMode === 1) d *= 16;        // lines
   else if(e.deltaMode === 2) d *= 100;  // pages
   const step = clamp(d * 0.0013, -0.16, 0.16);
-  cam.distT = clamp(cam.distT * Math.exp(step), 46, 300);
+  cam.distT = clamp(cam.distT * Math.exp(step), 46, fitDistance()*1.6);
   orbiting=false; syncOrbitBtn(); touched();
 }, {passive:false});
 
@@ -1077,7 +1098,7 @@ function select(id){
   card.classList.add('on');
   // fly camera toward the building
   cam.txT = B.x*0.55; cam.tzT = B.z*0.55; cam.tyT = 22;
-  cam.distT = clamp(cam.dist*0.80, 110, 190);
+  cam.distT = clamp(cam.dist*0.80, fitDistance()*0.55, fitDistance()*0.95);
   orbiting = false; syncOrbitBtn();
 }
 el('cCta').addEventListener('click', ()=>{
@@ -1128,18 +1149,28 @@ bTime.addEventListener('click', ()=>{
 function syncOrbitBtn(){ bOrbit.classList.toggle('on', orbiting); }
 bOrbit.addEventListener('click', ()=>{ orbiting = !orbiting; syncOrbitBtn(); });
 el('bReset').addEventListener('click', ()=>{
-  cam.azT=-0.72; cam.elT=0.50; cam.distT=205; cam.txT=0; cam.tyT=20; cam.tzT=0;
+  cam.azT=-0.72; cam.elT=0.50; cam.distT=fitDistance(); cam.txT=0; cam.tyT=20; cam.tzT=0;
   select(0); orbiting=false; syncOrbitBtn();
 });
 syncOrbitBtn();
 
 /* ============================ render ============================ */
 let W=0, H=0, dpr=1;
+// horizontal coverage shrinks with aspect ratio, so a portrait phone has to
+// pull the camera back proportionally or the estate won't fit the frame
+function fitDistance(){
+  const aspect = (W && H) ? W/H : 1.6;
+  return aspect < 1.25 ? 205 * Math.min(1.25/aspect, 2.7) : 205;
+}
 function resize(){
   dpr = Math.min(window.devicePixelRatio || 1, 2);
   const r = canvas.getBoundingClientRect();
   const w = Math.max(1, Math.round(r.width*dpr)), h = Math.max(1, Math.round(r.height*dpr));
-  if(w!==W || h!==H){ W=w; H=h; canvas.width=w; canvas.height=h; }
+  if(w!==W || h!==H){
+    const wasDefault = Math.abs(cam.distT - fitDistance()) < 0.5 || W === 0;
+    W=w; H=h; canvas.width=w; canvas.height=h;
+    if(wasDefault) cam.distT = fitDistance();   // don't fight a zoom the visitor set
+  }
 }
 window.addEventListener('resize', resize);
 resize();
